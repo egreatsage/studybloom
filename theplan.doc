@@ -1,0 +1,139 @@
+1. User Model
+No changes to include courses, and remove any course field if it exists.
+
+js
+Copy
+Edit
+const mongoose = require('mongoose');
+
+const userSchema = new mongoose.Schema({
+  name: String,
+  email: String,
+  role: { type: String, enum: ['student', 'teacher', 'admin'], required: true },
+  // Add authentication-related fields like password if needed
+}, { timestamps: true });
+
+module.exports = mongoose.model('User', userSchema);
+2. Course Model
+js
+Copy
+Edit
+const courseSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  code: { type: String, unique: true, required: true },
+  description: String,
+}, { timestamps: true });
+
+module.exports = mongoose.model('Course', courseSchema);
+3. TeachingAssignment Model
+js
+Copy
+Edit
+const teachingAssignmentSchema = new mongoose.Schema({
+  teacher: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true },
+}, { timestamps: true });
+
+teachingAssignmentSchema.index({ teacher: 1, course: 1 }, { unique: true });
+
+module.exports = mongoose.model('TeachingAssignment', teachingAssignmentSchema);
+4. Enrollment Model
+js
+Copy
+Edit
+const enrollmentSchema = new mongoose.Schema({
+  student: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true },
+}, { timestamps: true });
+
+enrollmentSchema.index({ student: 1, course: 1 }, { unique: true });
+
+module.exports = mongoose.model('Enrollment', enrollmentSchema);
+5. Unit Model
+js
+Copy
+Edit
+const unitSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  code: { type: String, required: true },
+  course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true },
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+}, { timestamps: true });
+
+unitSchema.index({ code: 1, course: 1 }, { unique: true });
+
+module.exports = mongoose.model('Unit', unitSchema);
+6. Assignment Model
+js
+Copy
+Edit
+const assignmentSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  description: String,
+  dueDate: Date,
+  unit: { type: mongoose.Schema.Types.ObjectId, ref: 'Unit', required: true },
+  course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true }, // denormalized
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  submissions: [
+    {
+      student: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+      fileUrl: String,
+      submittedAt: Date,
+      grade: Number,
+    }
+  ]
+}, { timestamps: true });
+
+assignmentSchema.index({ course: 1 });
+
+module.exports = mongoose.model('Assignment', assignmentSchema);
+🔄 System Flow
+🧑‍🏫 Teacher Adds Assignment
+Teacher logs in.
+
+UI fetches courses they’re assigned to via TeachingAssignment.
+
+Teacher selects a course and unit.
+
+System checks:
+
+Is the teacher assigned to the course (TeachingAssignment)?
+
+Is the unit part of the selected course?
+
+If yes, assignment is created.
+
+🧑‍🎓 Student Views Assignments
+Student logs in.
+
+UI fetches courses they’re enrolled in via Enrollment.
+
+Student selects a course.
+
+System fetches units and assignments where:
+
+Assignment’s course matches enrolled course.
+
+Assignment’s unit belongs to the course.
+
+System checks:
+
+Is student enrolled in course (Enrollment)?
+
+If yes, display assignments.
+
+📌 Submission Process
+Student submits work via an Assignment's submissions array.
+
+Teacher can view and grade submissions.
+
+✅ Benefits of This Flow
+Clear Separation of Roles: User model remains clean and focused.
+
+Many-to-Many Relationships: Handled via Enrollment and TeachingAssignment.
+
+Scalability: Adding/removing students or teachers from courses is easy.
+
+Data Integrity: Prevents duplication with composite indexes.
+
+Flexibility: Supports multiple units per course and multiple submissions.

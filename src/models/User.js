@@ -1,0 +1,46 @@
+import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
+
+const { Schema, model, models } = mongoose;
+
+const userSchema = new Schema({
+  role: {
+    type: String,
+    enum: ['admin', 'teacher', 'student'],
+    required: true,
+  },
+  name: { 
+    type: String, 
+    required: true 
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  phonenumber:{
+    type:String,
+    required:true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+  photoUrl: { 
+    type: String 
+  }
+}, {
+  timestamps: true
+});
+
+// Pre-save hook to hash password if modified
+userSchema.pre('save', async function (next) {
+  if (this.isModified('password')) {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
+  next();
+});
+
+const User = models.User || model('User', userSchema);
+
+export default User;
