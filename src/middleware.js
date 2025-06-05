@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { withAuth, withCourseAccess, withUnitAccess } from './middleware/auth';
+import { withAuth } from './middleware/auth';
 
 export async function middleware(request) {
   const { pathname } = request.nextUrl;
@@ -32,33 +32,6 @@ export async function middleware(request) {
 
   // API routes that require authentication
   if (pathname.startsWith('/api')) {
-    // Course-specific routes
-    if (pathname.match(/\/api\/courses\/[^/]+/)) {
-      const courseId = pathname.split('/')[3];
-      return withCourseAccess(request, courseId);
-    }
-
-    // Unit-specific routes
-    if (pathname.match(/\/api\/units\/[^/]+/)) {
-      const unitId = pathname.split('/')[3];
-      return withUnitAccess(request, unitId);
-    }
-
-    // Assignment-specific routes
-    if (pathname.match(/\/api\/assignments\/[^/]+/)) {
-      const assignmentId = pathname.split('/')[3];
-      // First get the unit ID from the assignment, then check unit access
-      const assignment = await Assignment.findById(assignmentId);
-      if (!assignment) {
-        return new NextResponse(
-          JSON.stringify({ message: 'Assignment not found' }),
-          { status: 404 }
-        );
-      }
-      return withUnitAccess(request, assignment.unit);
-    }
-
-    // Default to requiring authentication for all other API routes
     return withAuth(request);
   }
 

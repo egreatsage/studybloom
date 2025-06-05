@@ -13,24 +13,26 @@ const useCourseStore = create((set) => ({
       const res = await fetch(url);
       if (!res.ok) throw new Error('Failed to fetch courses');
       const data = await res.json();
-      set({ courses: data.courses || [], loading: false });
+      // Ensure courses are populated with school and department
+      const courses = Array.isArray(data) ? data : data.courses || [];
+      set({ courses, loading: false });
       if (data.courses?.length === 0) {
-        toast('No courses found', { icon: 'ℹ️' });
+        toast('No courses found', { icon: 'ℹ️', duration: 2000 });
       }
     } catch (error) {
       set({ error: error.message, loading: false });
-      toast(`Failed to fetch courses: ${error.message}`, { icon: '❌' });
+      toast(`Failed to fetch courses: ${error.message}`, { icon: '❌', duration: 2000 });
     }
   },
 
   fetchDepartmentsBySchool: async (schoolId) => {
     try {
       const res = await fetch(`/api/departments?schoolId=${schoolId}`);
-      if (!res.ok) throw new Error('Failed to fetch departments');
+      if (!res.ok) console.log('Failed to fetch departments');
       const data = await res.json();
       return data.departments || [];
     } catch (error) {
-      toast(`Failed to fetch departments: ${error.message}`, { icon: '❌' });
+      console.log(`Failed to fetch departments: ${error.message}`, { icon: '❌' });
       return [];
     }
   },
@@ -38,42 +40,57 @@ const useCourseStore = create((set) => ({
   addCourse: async (formData) => {
     set({ loading: true, error: null });
     try {
+      // Convert FormData to plain object
+      const obj = {};
+      formData.forEach((value, key) => {
+        obj[key] = value;
+      });
       const res = await fetch('/api/courses', {
         method: 'POST',
-        body: formData,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(obj),
       });
       if (!res.ok) throw new Error('Failed to add course');
-      const data = await res.json();
+      const newCourse = await res.json();
       set((state) => ({
-        courses: [...state.courses, data.course],
+        courses: [...state.courses, newCourse],
         loading: false,
       }));
-      toast('Course added successfully', { icon: '✅' });
+      toast('Course added successfully', { icon: '✅', duration: 2000 });
     } catch (error) {
       set({ error: error.message, loading: false });
-      toast(`Failed to add course: ${error.message}`, { icon: '❌' });
+      toast(`Failed to add course: ${error.message}`, { icon: '❌', duration: 2000 });
     }
   },
 
   editCourse: async (id, formData) => {
     set({ loading: true, error: null });
     try {
-      const res = await fetch(`/api/courses?id=${id}`, {
-        method: 'PUT',
-        body: formData,
+      // Convert FormData to plain object and include the ID
+      const obj = { id };
+      formData.forEach((value, key) => {
+        obj[key] = value;
       });
-      if (!res.ok) throw new Error('Failed to edit course');
-      const data = await res.json();
+      const res = await fetch('/api/courses', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(obj),
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Failed to edit course');
+      }
+      const updatedCourse = await res.json();
       set((state) => ({
         courses: state.courses.map((course) =>
-          course._id === id ? data.course : course
+          course._id === id ? updatedCourse : course
         ),
         loading: false,
       }));
-      toast('Course updated successfully', { icon: '✅' });
+      toast('Course updated successfully', { icon: '✅', duration: 2000 });
     } catch (error) {
       set({ error: error.message, loading: false });
-      toast(`Failed to edit course: ${error.message}`, { icon: '❌' });
+      toast(`Failed to edit course: ${error.message}`, { icon: '❌', duration: 2000 });
     }
   },
 
@@ -88,10 +105,10 @@ const useCourseStore = create((set) => ({
         courses: state.courses.filter((course) => course._id !== id),
         loading: false,
       }));
-      toast('Course deleted successfully', { icon: '✅' });
+      toast('Course deleted successfully', { icon: '✅', duration: 2000 });
     } catch (error) {
       set({ error: error.message, loading: false });
-      toast(`Failed to delete course: ${error.message}`, { icon: '❌' });
+      toast(`Failed to delete course: ${error.message}`, { icon: '❌', duration: 2000 });
     }
   },
 }));

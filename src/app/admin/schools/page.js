@@ -13,6 +13,7 @@ export default function SchoolsPage() {
   const { schools, fetchSchools, addSchool, updateSchool, deleteSchool, loading, error } = useSchoolStore();
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [selectedSchool, setSelectedSchool] = React.useState(null);
+  const [searchQuery, setSearchQuery] = React.useState('');
 
   useEffect(() => {
     fetchSchools();
@@ -44,6 +45,11 @@ export default function SchoolsPage() {
     }
   };
 
+  // Filter schools based on search query (case-insensitive)
+  const filteredSchools = schools.filter((school) =>
+    school.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <ErrorBoundary>
       <div className="p-6">
@@ -58,6 +64,17 @@ export default function SchoolsPage() {
           </button>
         </div>
 
+        {/* Search input */}
+        <div className="mb-4  flex justify-end w-52">
+          <input
+            type="text"
+            placeholder="Search by name..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded-md"
+          />
+        </div>
+
         {error && (
           <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md text-red-600">
             {error}
@@ -65,7 +82,7 @@ export default function SchoolsPage() {
         )}
 
         <SchoolTable
-          schools={schools}
+          schools={filteredSchools}
           loading={loading}
           onEdit={openModal}
           onDelete={handleDelete}

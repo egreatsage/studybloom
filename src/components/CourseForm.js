@@ -1,24 +1,111 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FaSpinner } from 'react-icons/fa';
+import toast from 'react-hot-toast';
 
 const CourseForm = ({ onSubmit, loading, onClose, defaultValues }) => {
+  const [schools, setSchools] = useState([]);
+  const [departments, setDepartments] = useState([]);
+  const [loadingSchools, setLoadingSchools] = useState(false);
+  const [loadingDepartments, setLoadingDepartments] = useState(false);
   const {
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm({
-    defaultValues: defaultValues || {
+    defaultValues: defaultValues ? {
+      name: defaultValues.name || '',
+      code: defaultValues.code || '',
+      description: defaultValues.description || '',
+      school: defaultValues.school?._id || '',
+      department: defaultValues.department?._id || '',
+    } : {
       name: '',
       code: '',
       description: '',
+      school: '',
+      department: '',
     },
   });
 
+  const selectedSchool = watch('school');
+
+  // Fetch departments for a school
+  const fetchDepartments = async (schoolId) => {
+    if (!schoolId) {
+      setDepartments([]);
+      return;
+    }
+    setLoadingDepartments(true);
+    try {
+      const res = await fetch(`/api/departments?schoolId=${schoolId}`);
+      if (!res.ok) throw new Error('Failed to fetch departments');
+      const data = await res.json();
+      setDepartments(data.departments || []);
+    } catch (error) {
+      toast.error('Failed to load departments');
+      console.error('Error fetching departments:', error);
+    } finally {
+      setLoadingDepartments(false);
+    }
+  };
+
+  // When editing, fetch departments for the selected school
+  useEffect(() => {
+    if (defaultValues?.school?._id) {
+      fetchDepartments(defaultValues.school._id);
+    }
+  }, [defaultValues]);
+
+  // Fetch schools on component mount
+  useEffect(() => {
+    const fetchSchools = async () => {
+      setLoadingSchools(true);
+      try {
+        const res = await fetch('/api/schools');
+        if (!res.ok) throw new Error('Failed to fetch schools');
+        const data = await res.json();
+        setSchools(data.schools || []);
+      } catch (error) {
+        toast.error('Failed to load schools');
+        console.error('Error fetching schools:', error);
+      } finally {
+        setLoadingSchools(false);
+      }
+    };
+    fetchSchools();
+  }, []);
+
+  // Fetch departments when school is selected
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      if (!selectedSchool) {
+        setDepartments([]);
+        return;
+      }
+      setLoadingDepartments(true);
+      try {
+        const res = await fetch(`/api/departments?schoolId=${selectedSchool}`);
+        if (!res.ok) console.log('Failed to fetch departments');
+        const data = await res.json();
+        setDepartments(data.departments || []);
+      } catch (error) {
+        console.error('Failed to load departments');
+        console.error('Error fetching departments:', error);
+      } finally {
+        setLoadingDepartments(false);
+      }
+    };
+    fetchDepartments();
+  }, [selectedSchool]);
+
   // Reset form when defaultValues change
-  React.useEffect(() => {
+  useEffect(() => {
     if (defaultValues) {
       reset(defaultValues);
     }
@@ -26,6 +113,46 @@ const CourseForm = ({ onSubmit, loading, onClose, defaultValues }) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      {/* School Selection */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700">School</label>
+        <select
+          {...register('school', { required: 'School is required' })}
+          className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          disabled={loadingSchools}
+        >
+          <option value="">Select a school</option>
+          {schools.map((school) => (
+            <option key={school._id} value={school._id}>
+              {school.name}
+            </option>
+          ))}
+        </select>
+        {errors.school && (
+          <p className="mt-1 text-sm text-red-600">{errors.school.message}</p>
+        )}
+      </div>
+
+      {/* Department Selection */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700">Department</label>
+        <select
+          {...register('department', { required: 'Department is required' })}
+          className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          disabled={!selectedSchool || loadingDepartments}
+        >
+          <option value="">Select a department</option>
+          {departments.map((dept) => (
+            <option key={dept._id} value={dept._id}>
+              {dept.name}
+            </option>
+          ))}
+        </select>
+        {errors.department && (
+          <p className="mt-1 text-sm text-red-600">{errors.department.message}</p>
+        )}
+      </div>
+
       <div>
         <label className="block text-sm font-medium text-gray-700">Course Name</label>
         <input

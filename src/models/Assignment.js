@@ -60,6 +60,6 @@ const assignmentSchema = new Schema({
 // Index on course for faster queries when listing assignments by course
 assignmentSchema.index({ course: 1 });
 
-const Assignment = models.Assignment || model('Assignment', assignmentSchema);
+const Assignment = (models && models.Assignment) || model('Assignment', assignmentSchema);
 
 export default Assignment;

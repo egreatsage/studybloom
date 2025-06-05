@@ -5,11 +5,11 @@ import { toast } from 'react-hot-toast';
 export const handleError = (error, customMessage = '') => {
   console.error(error);
   const message = customMessage || error.message || 'An unexpected error occurred';
-  toast.error(message);
+  toast.error(message, { duration: 2000 });
 };
 
 export const handleSuccess = (message) => {
-  toast.success(message);
+  toast.success(message, { duration: 2000 });
 };
 
 export const handleAPIResponse = async (response) => {

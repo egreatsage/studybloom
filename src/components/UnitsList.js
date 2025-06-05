@@ -1,8 +1,17 @@
 'use client';
 
 import { FaTrash, FaEdit } from 'react-icons/fa';
+import LoadingSpinner from './LoadingSpinner';
 
-const UnitsList = ({ units, onEdit, onDelete, canEdit = false, canDelete = false }) => {
+const UnitsList = ({ units, loading, onEdit, onDelete, canEdit = false, canDelete = false }) => {
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center py-8">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
+
   if (!units || units.length === 0) {
     return <p>No units found for this course.</p>;
   }

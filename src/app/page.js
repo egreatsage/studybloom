@@ -3,6 +3,7 @@
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import { MdLogin } from "react-icons/md";
 import Link from 'next/link';
 
 export default function HomePage() {
@@ -47,20 +48,18 @@ export default function HomePage() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen space-y-4">
-      <h1 className="text-3xl font-bold">Welcome to StudyBloom</h1>
-      <Link
+    <div className="flex flex-col items-center justify-center h-screen space-y-4 bg-gray-50">
+      <h1 className="text-3xl font-bold">StudyBloom</h1>
+      <div className='flex items-center bg-green-800 py-2 cursor-pointer hover:bg-green-900 px-3 rounded-md gap-2  hover:transition-opacity '>
+        <MdLogin className='text-white text-3xl font-bold'/>
+       <Link
         href="/login"
-        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        className=" text-white text-xl font-bold"
       >
         Sign In
       </Link>
-      <Link
-        href="/register"
-        className="px-4 py-2 border border-blue-600 text-blue-600 rounded hover:bg-blue-50"
-      >
-        Create Account
-      </Link>
+      </div>
+     
     </div>
   );
 }

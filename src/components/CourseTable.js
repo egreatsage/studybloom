@@ -43,13 +43,13 @@ const CourseTable = ({ courses, loading, onEdit, onDelete }) => {
                 <div className="flex space-x-2">
                   <button
                     onClick={() => onEdit(course)}
-                    className="p-1 text-blue-600 hover:text-blue-800"
+                    className="p-1 text-blue-600 hover:text-blue-800 cursor-pointer"
                   >
                     <FaEdit />
                   </button>
                   <button
                     onClick={() => onDelete(course._id)}
-                    className="p-1 text-red-600 hover:text-red-800"
+                    className="p-1 text-red-600 hover:text-red-800 cursor-pointer"
                   >
                     <FaTrash />
                   </button>

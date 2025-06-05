@@ -15,7 +15,7 @@ const useSchoolStore = create((set) => ({
       set({ schools: data.schools || [], loading: false });
     } catch (error) {
       set({ error: error.message, loading: false });
-      toast.error(`Failed to fetch schools: ${error.message}`);
+      toast.error(`Failed to fetch schools: ${error.message}`, { duration: 2000 });
     }
   },
 
@@ -36,10 +36,10 @@ const useSchoolStore = create((set) => ({
         schools: [data.school, ...state.schools],
         loading: false,
       }));
-      toast.success('School added successfully');
+      toast.success('School added successfully', { duration: 2000 });
     } catch (error) {
       set({ error: error.message, loading: false });
-      toast.error(`Failed to add school: ${error.message}`);
+      toast.error(`Failed to add school: ${error.message}`, { duration: 2000 });
     }
   },
 
@@ -62,10 +62,10 @@ const useSchoolStore = create((set) => ({
         ),
         loading: false,
       }));
-      toast.success('School updated successfully');
+      toast.success('School updated successfully', { duration: 2000 });
     } catch (error) {
       set({ error: error.message, loading: false });
-      toast.error(`Failed to update school: ${error.message}`);
+      toast.error(`Failed to update school: ${error.message}`, { duration: 2000 });
     }
   },
 
@@ -83,10 +83,10 @@ const useSchoolStore = create((set) => ({
         schools: state.schools.filter((school) => school._id !== id),
         loading: false,
       }));
-      toast.success('School deleted successfully');
+      toast.success('School deleted successfully', { duration: 2000 });
     } catch (error) {
       set({ error: error.message, loading: false });
-      toast.error(`Failed to delete school: ${error.message}`);
+      toast.error(`Failed to delete school: ${error.message}`, { duration: 2000 });
     }
   },
 }));

@@ -1,15 +1,17 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import useCourseStore from '@/lib/stores/courseStore';
 import { motion, AnimatePresence } from 'framer-motion';
 import { confirmDialog } from '@/lib/utils/confirmDialog';
 import CourseTable from '@/components/CourseTable';
 import CourseForm from '@/components/CourseForm';
+import SemesterManager from '@/components/SemesterManager';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { FaPlus } from 'react-icons/fa';
 
 export default function CoursesPage() {
+  const [activeTab, setActiveTab] = useState('courses'); // 'courses' or 'semesters'
   const {
     courses,
     fetchCourses,
@@ -21,10 +23,17 @@ export default function CoursesPage() {
   } = useCourseStore();
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [selectedCourse, setSelectedCourse] = React.useState(null);
+  const [searchQuery, setSearchQuery] = React.useState('');
 
   useEffect(() => {
     fetchCourses();
   }, [fetchCourses]);
+
+  // Filter courses based on search query (case-insensitive)
+  const filteredCourses = courses.filter((course) =>
+    course.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    course.code.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const handleSubmit = async (data) => {
     const formData = new FormData();
@@ -62,29 +71,72 @@ export default function CoursesPage() {
   return (
     <div className="p-6">
       <ErrorBoundary>
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Courses</h1>
-          <button
-            onClick={() => openModal()}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center space-x-2"
-          >
-            <FaPlus />
-            <span>Add Course</span>
-          </button>
-        </div>
-
-        {error && (
-          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md text-red-600">
-            {error}
+        <div className="mb-6">
+          <div className="flex justify-between items-center mb-4">
+            <h1 className="text-2xl font-bold">Course Management</h1>
+            {activeTab === 'courses' && (
+              <button
+                onClick={() => openModal()}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center space-x-2"
+              >
+                <FaPlus />
+                <span>Add Course</span>
+              </button>
+            )}
           </div>
-        )}
+          
+          <div className="flex space-x-4 mb-4">
+            <button
+              className={`px-4 py-2 rounded-md ${
+                activeTab === 'courses'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+              onClick={() => setActiveTab('courses')}
+            >
+              Courses
+            </button>
+            <button
+              className={`px-4 py-2 rounded-md ${
+                activeTab === 'semesters'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+              onClick={() => setActiveTab('semesters')}
+            >
+              Semester Management
+            </button>
+          </div>
+        </div>
+        {activeTab === 'courses' ? (
+          <>
+            {/* Search input */}
+            <div className="mb-4">
+              <input
+                type="text"
+                placeholder="Search by name or code..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-52 p-2 border border-gray-300 rounded-md"
+              />
+            </div>
 
-        <CourseTable
-          courses={courses}
-          loading={loading}
-          onEdit={openModal}
-          onDelete={handleDelete}
-        />
+            {error && (
+              <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md text-red-600">
+                {error}
+              </div>
+            )}
+
+            <CourseTable
+              courses={filteredCourses}
+              loading={loading}
+              onEdit={openModal}
+              onDelete={handleDelete}
+            />
+          </>
+        ) : (
+          <SemesterManager />
+        )}
 
         <AnimatePresence>
           {isModalOpen && (

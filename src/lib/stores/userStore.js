@@ -12,16 +12,15 @@ const useUserStore = create((set) => ({
       const res = await fetch('/api/users');
       if (!res.ok) throw new Error('Failed to fetch users');
       const data = await res.json();
-      const users = data.users || [];
+      const users = Array.isArray(data) ? data : [];
+      
       set({ users, loading: false });
       if (users.length === 0) {
-        toast.info('No users found');
-      } else {
-        toast.success('Users fetched successfully');
-      }
+         toast('No user found', { icon: 'ℹ️' });
+      } 
     } catch (error) {
       set({ error: error.message, loading: false });
-      toast.error(`Fetch users failed: ${error.message}`);
+      toast.error(`Fetch users failed: ${error.message}`, { duration: 2000 });
     }
   },
 
@@ -34,11 +33,11 @@ const useUserStore = create((set) => ({
       });
       if (!res.ok) throw new Error('Failed to add user');
       const data = await res.json();
-      set((state) => ({ users: [...state.users, data.user], loading: false }));
-      toast.success('User added successfully');
+      set((state) => ({ users: [...state.users, data], loading: false }));
+      toast('success, user added !', { icon: 'ℹ️' });
     } catch (error) {
       set({ error: error.message, loading: false });
-      toast.error(`Add user failed: ${error.message}`);
+      toast.error(`Add user failed: ${error.message}`, { duration: 2000 });
     }
   },
 
@@ -52,13 +51,13 @@ const useUserStore = create((set) => ({
       if (!res.ok) throw new Error('Failed to edit user');
       const data = await res.json();
       set((state) => ({
-        users: state.users.map((user) => (user._id === id ? data.user : user)),
+        users: state.users.map((user) => (user._id === id ? data : user)),
         loading: false,
       }));
-      toast.success('User updated successfully');
+      toast.success('User updated successfully', { duration: 2000 });
     } catch (error) {
       set({ error: error.message, loading: false });
-      toast.error(`Edit user failed: ${error.message}`);
+      toast.error(`Edit user failed: ${error.message}`, { duration: 2000 });
     }
   },
 
@@ -73,10 +72,10 @@ const useUserStore = create((set) => ({
         users: state.users.filter((user) => user._id !== id),
         loading: false,
       }));
-      toast.success('User deleted successfully');
+      toast.success('User deleted successfully', { duration: 2000 });
     } catch (error) {
       set({ error: error.message, loading: false });
-      toast.error(`Delete user failed: ${error.message}`);
+      toast.error(`Delete user failed: ${error.message}`, { duration: 2000 });
     }
   },
 }));

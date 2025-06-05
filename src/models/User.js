@@ -9,6 +9,14 @@ const userSchema = new Schema({
     enum: ['admin', 'teacher', 'student'],
     required: true,
   },
+  regNumber: {
+    type: String,
+    required: function() {
+      return this.role === 'student';
+    },
+    unique: true,
+    sparse: true
+  },
   name: { 
     type: String, 
     required: true 
@@ -18,7 +26,7 @@ const userSchema = new Schema({
     required: true,
     unique: true,
   },
-  phonenumber:{
+  phoneNumber:{
     type:String,
     required:true,
   },
@@ -28,6 +36,13 @@ const userSchema = new Schema({
   },
   photoUrl: { 
     type: String 
+  },
+  course: {
+    type: Schema.Types.ObjectId,
+    ref: 'Course',
+    required: function() {
+      return this.role === 'teacher' || this.role === 'student';
+    }
   }
 }, {
   timestamps: true
@@ -41,6 +56,6 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
-const User = models.User || model('User', userSchema);
+const User = (models && models.User) || model('User', userSchema);
 
 export default User;

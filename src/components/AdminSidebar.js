@@ -1,27 +1,37 @@
-'use client';
+  'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { signOut, useSession } from 'next-auth/react';
 import { 
   FaUsers, 
   FaGraduationCap, 
   FaUniversity, 
   FaBuilding,
   FaBars,
-  FaTimes
+  FaTimes,
+  FaSignOutAlt,
+  FaCalendarAlt,
+  FaMapMarkerAlt,
+  FaChalkboardTeacher
 } from 'react-icons/fa';
 
 const menuItems = [
   { path: '/admin/users', icon: FaUsers, label: 'Users' },
-  { path: '/admin/courses', icon: FaGraduationCap, label: 'Courses' },
-  { path: '/admin/departments', icon: FaBuilding, label: 'Departments' },
   { path: '/admin/schools', icon: FaUniversity, label: 'Schools' },
+  { path: '/admin/departments', icon: FaBuilding, label: 'Departments' },
+  { path: '/admin/courses', icon: FaGraduationCap, label: 'Courses' },
+  { path: '/admin/units', icon: FaUniversity, label: 'Units' },
+  { path: '/admin/teaching-assignments', icon: FaChalkboardTeacher, label: 'Teaching Assignments' },
+  { path: '/admin/timetables', icon: FaCalendarAlt, label: 'Timetables' },
+  { path: '/admin/venues', icon: FaMapMarkerAlt, label: 'Venues' },
 ];
 
 export default function AdminSidebar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const { data: session } = useSession();
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -44,8 +54,14 @@ export default function AdminSidebar() {
           lg:translate-x-0 lg:w-64 lg:static`}
       >
         {/* Logo/Header */}
-        <div className="p-6  border-b">
-          <h1 className="text-xl font-bold text-blue-600">StudyBloom Admin</h1>
+        <div className="p-6 border-b">
+          <h1 className="text-xl font-bold text-gray-800">StudyBloom (Admin)</h1>
+          {session?.user && (
+            <div className="mt-2 text-sm">
+              <p className="text-green-400 font-bold">{session.user.name}</p>
+              
+            </div>
+          )}
         </div>
 
         {/* Navigation */}
@@ -61,12 +77,12 @@ export default function AdminSidebar() {
                     href={item.path}
                     className={`flex items-center space-x-3 p-3 rounded-lg transition-colors
                       ${isActive 
-                        ? 'bg-blue-50 text-blue-600' 
-                        : 'text-gray-700 hover:bg-gray-100'
+                        ? 'bg-slate-50 text-gray-600' 
+                        : 'text-gray-700 hover:bg-slate-100'
                       }`}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    <Icon className={`text-xl ${isActive ? 'text-blue-600' : 'text-gray-400'}`} />
+                    <Icon className={`text-xl ${isActive ? 'text-gray-600' : 'text-gray-400'}`} />
                     <span className="font-medium">{item.label}</span>
                   </Link>
                 </li>
@@ -74,6 +90,17 @@ export default function AdminSidebar() {
             })}
           </ul>
         </nav>
+
+        {/* Sign Out Button */}
+        <div className="p-4 mt-auto border-t">
+          <button
+            onClick={() => signOut({ callbackUrl: '/login' })}
+            className="flex cursor-pointer items-center space-x-3 w-full p-3 rounded-lg text-red-600 hover:bg-red-50 transition-colors"
+          >
+            <FaSignOutAlt className="text-xl" />
+            <span className="font-medium">Sign Out</span>
+          </button>
+        </div>
       </div>
 
       {/* Mobile Overlay */}

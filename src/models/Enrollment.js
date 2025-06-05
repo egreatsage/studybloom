@@ -20,6 +20,6 @@ const enrollmentSchema = new Schema({
 // Create a compound unique index on student and course to prevent duplicate enrollments
 enrollmentSchema.index({ student: 1, course: 1 }, { unique: true });
 
-const Enrollment = models.Enrollment || model('Enrollment', enrollmentSchema);
+const Enrollment = (models && models.Enrollment) || model('Enrollment', enrollmentSchema);
 
 export default Enrollment;

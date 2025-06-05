@@ -22,7 +22,7 @@ export const confirmDialog = (message) => {
                 toast.dismiss(t.id);
                 resolve(false);
               }}
-              className="w-full border border-transparent rounded-none rounded-bl-lg px-4 py-3 flex items-center justify-center text-sm font-medium text-gray-700 hover:text-gray-500 focus:outline-none"
+              className="w-full cursor-pointer border border-transparent rounded-none rounded-bl-lg px-4 py-3 flex items-center justify-center text-sm font-medium text-gray-700 hover:text-gray-500 focus:outline-none"
             >
               Cancel
             </button>
@@ -31,7 +31,7 @@ export const confirmDialog = (message) => {
                 toast.dismiss(t.id);
                 resolve(true);
               }}
-              className="w-full border border-transparent rounded-none rounded-br-lg px-4 py-3 flex items-center justify-center text-sm font-medium text-red-600 hover:text-red-500 focus:outline-none border-l border-gray-200"
+              className="w-full border cursor-pointer rounded-none rounded-br-lg px-4 py-3 flex items-center justify-center text-sm font-medium text-red-600 hover:text-red-500 focus:outline-none border-l border-gray-200"
             >
               Delete
             </button>

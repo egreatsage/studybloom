@@ -19,7 +19,7 @@ const useAssignmentStore = create((set, get) => ({
       set({ assignments: data });
     } catch (error) {
       set({ error: error.message });
-      toast.error('Failed to load assignments');
+      toast.error('Failed to load assignments', { duration: 2000 });
     } finally {
       set({ loading: false });
     }
@@ -36,7 +36,7 @@ const useAssignmentStore = create((set, get) => ({
       return data;
     } catch (error) {
       set({ error: error.message });
-      toast.error('Failed to load assignment');
+      toast.error('Failed to load assignment', { duration: 2000 });
       throw error;
     } finally {
       set({ loading: false });
@@ -63,11 +63,11 @@ const useAssignmentStore = create((set, get) => ({
         assignments: [...state.assignments, newAssignment]
       }));
       
-      toast.success('Assignment created successfully');
+      toast.success('Assignment created successfully', { duration: 2000 });
       return newAssignment;
     } catch (error) {
       set({ error: error.message });
-      toast.error(error.message || 'Failed to create assignment');
+      toast.error(error.message || 'Failed to create assignment', { duration: 2000 });
       throw error;
     } finally {
       set({ loading: false });
@@ -99,11 +99,11 @@ const useAssignmentStore = create((set, get) => ({
           : state.currentAssignment
       }));
       
-      toast.success('Assignment updated successfully');
+      toast.success('Assignment updated successfully', { duration: 2000 });
       return updatedAssignment;
     } catch (error) {
       set({ error: error.message });
-      toast.error(error.message || 'Failed to update assignment');
+      toast.error(error.message || 'Failed to update assignment', { duration: 2000 });
       throw error;
     } finally {
       set({ loading: false });
@@ -127,10 +127,10 @@ const useAssignmentStore = create((set, get) => ({
           : state.currentAssignment
       }));
       
-      toast.success('Assignment deleted successfully');
+      toast.success('Assignment deleted successfully', { duration: 2000 });
     } catch (error) {
       set({ error: error.message });
-      toast.error('Failed to delete assignment');
+      toast.error('Failed to delete assignment', { duration: 2000 });
       throw error;
     } finally {
       set({ loading: false });
@@ -162,11 +162,11 @@ const useAssignmentStore = create((set, get) => ({
           : state.currentAssignment
       }));
       
-      toast.success('Assignment submitted successfully');
+      toast.success('Assignment submitted successfully', { duration: 2000 });
       return updatedAssignment;
     } catch (error) {
       set({ error: error.message });
-      toast.error(error.message || 'Failed to submit assignment');
+      toast.error(error.message || 'Failed to submit assignment', { duration: 2000 });
       throw error;
     } finally {
       set({ loading: false });
@@ -198,11 +198,11 @@ const useAssignmentStore = create((set, get) => ({
           : state.currentAssignment
       }));
       
-      toast.success('Submission graded successfully');
+      toast.success('Submission graded successfully', { duration: 2000 });
       return updatedAssignment;
     } catch (error) {
       set({ error: error.message });
-      toast.error(error.message || 'Failed to grade submission');
+      toast.error(error.message || 'Failed to grade submission', { duration: 2000 });
       throw error;
     } finally {
       set({ loading: false });

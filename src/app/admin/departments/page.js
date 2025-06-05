@@ -21,10 +21,16 @@ export default function DepartmentsPage() {
   } = useDepartmentStore();
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [selectedDepartment, setSelectedDepartment] = React.useState(null);
+  const [searchQuery, setSearchQuery] = React.useState('');
 
   useEffect(() => {
     fetchDepartments();
   }, [fetchDepartments]);
+
+  // Filter departments based on search query (case-insensitive)
+  const filteredDepartments = departments.filter((department) =>
+    department.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const handleSubmit = async (data) => {
     const formData = new FormData();
@@ -73,6 +79,17 @@ export default function DepartmentsPage() {
           </button>
         </div>
 
+        {/* Search input */}
+        <div className="mb-4">
+          <input
+            type="text"
+            placeholder="Search  name..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-52 p-2 border border-gray-300 rounded-md"
+          />
+        </div>
+
         {error && (
           <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md text-red-600">
             {error}
@@ -80,7 +97,7 @@ export default function DepartmentsPage() {
         )}
 
         <DepartmentTable
-          departments={departments}
+          departments={filteredDepartments}
           loading={loading}
           onEdit={openModal}
           onDelete={handleDelete}

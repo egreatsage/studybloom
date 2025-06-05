@@ -2,11 +2,15 @@
 
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 import { FaSpinner } from 'react-icons/fa';
+import Swal from 'sweetalert2';
+import useCourseStore from '@/lib/stores/courseStore';
 
 const roles = ['admin', 'teacher', 'student'];
 
 const UserForm = ({ onSubmit, loading, onClose, defaultValues }) => {
+  const { courses, fetchCourses } = useCourseStore();
   const {
     register,
     handleSubmit,
@@ -25,22 +29,77 @@ const UserForm = ({ onSubmit, loading, onClose, defaultValues }) => {
   });
 
   const [photoPreview, setPhotoPreview] = useState(null);
-  const watchPhoto = watch('photo');
+  const [photoUrl, setPhotoUrl] = useState(defaultValues?.photoUrl || null);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [courseSearch, setCourseSearch] = useState('');
+  const [selectedCourse, setSelectedCourse] = useState(defaultValues?.course || null);
 
   useEffect(() => {
-    if (watchPhoto && watchPhoto.length > 0) {
-      const file = watchPhoto[0];
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPhotoPreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    } else if (defaultValues && defaultValues.photoUrl) {
+    if (defaultValues?.photoUrl) {
       setPhotoPreview(defaultValues.photoUrl);
-    } else {
-      setPhotoPreview(null);
+      setPhotoUrl(defaultValues.photoUrl);
     }
-  }, [watchPhoto, defaultValues]);
+    if (defaultValues?.course) {
+      setSelectedCourse(defaultValues.course);
+      // Set the course search field with the course name
+      if (typeof defaultValues.course === 'object') {
+        setCourseSearch(`${defaultValues.course.code} - ${defaultValues.course.name}`);
+      }
+    }
+  }, [defaultValues]);
+
+  useEffect(() => {
+    fetchCourses();
+  }, [fetchCourses]);
+
+  const handlePhotoChange = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Show preview immediately
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPhotoPreview(reader.result);
+    };
+    reader.readAsDataURL(file);
+    const toastId = toast.loading('Uploading Image...');
+ 
+
+    // Upload to Cloudinary
+    setUploadingPhoto(true);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res = await fetch('/api/upload-image', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to upload image');
+      }
+
+      const data = await res.json();
+      setPhotoUrl(data.imageUrl);
+      
+     toast.success('Image uploaded successfully!', {
+      id: toastId,
+    });
+    } catch (error) {
+      console.error('Upload error:', error);
+      
+      // Show error message
+      toast.error('Failed to upload photo. Please try again.', {
+        id: toastId,
+      });
+      
+      // Reset preview if upload failed
+      setPhotoPreview(defaultValues?.photoUrl || null);
+    } finally {
+      setUploadingPhoto(false);
+    }
+  };
 
   useEffect(() => {
     if (defaultValues) {
@@ -49,15 +108,40 @@ const UserForm = ({ onSubmit, loading, onClose, defaultValues }) => {
   }, [defaultValues, reset]);
 
   const internalOnSubmit = (data) => {
-    const formData = new FormData();
+    // Validate course selection for teachers and students
+    if ((data.role === 'teacher' || data.role === 'student') && !selectedCourse) {
+      toast.error('Please select a course');
+      return;
+    }
 
+    const formData = new FormData();
+    
+    // Debug log
+    console.log('Form data before submission:', data);
+    
+    // Add all form data except photo
     Object.entries(data).forEach(([key, value]) => {
-      if (key === 'photo' && value && value.length > 0) {
-        formData.append(key, value[0]);
-      } else if (value !== undefined && value !== null) {
+      if (key !== 'photo' && value !== undefined && value !== null) {
         formData.append(key, value);
       }
     });
+
+    // Add photoUrl if available
+    if (photoUrl) {
+      formData.append('photoUrl', photoUrl);
+    }
+
+    // Add courseId if selected and role is teacher or student
+    if ((data.role === 'teacher' || data.role === 'student') && selectedCourse) {
+      formData.append('courseId', selectedCourse._id);
+    }
+
+    // Debug log
+    const formDataObj = {};
+    formData.forEach((value, key) => {
+      formDataObj[key] = value;
+    });
+    console.log('FormData being submitted:', formDataObj);
 
     onSubmit(formData);
   };
@@ -74,13 +158,25 @@ const UserForm = ({ onSubmit, loading, onClose, defaultValues }) => {
               className="w-full h-full object-cover"
             />
           </div>
-          <label className="cursor-pointer bg-blue-50 hover:bg-blue-100 text-blue-600 px-4 py-2 rounded-md">
-            Choose Photo
+          <label 
+            className={`cursor-pointer bg-blue-50 hover:bg-blue-100 text-blue-600 px-4 py-2 rounded-md flex items-center gap-2 ${
+              uploadingPhoto ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+          >
+            {uploadingPhoto ? (
+              <>
+                <FaSpinner className="animate-spin" />
+                <span>Uploading...</span>
+              </>
+            ) : (
+              'Choose Photo'
+            )}
             <input
               type="file"
-              {...register('photo')}
+              onChange={handlePhotoChange}
               accept="image/*"
               className="hidden"
+              disabled={uploadingPhoto}
             />
           </label>
         </div>
@@ -158,6 +254,7 @@ const UserForm = ({ onSubmit, loading, onClose, defaultValues }) => {
             <input
               type="tel"
               {...register('phoneNumber', {
+                required: 'Phone number is required',
                 pattern: {
                   value: /^[0-9+\-\s()]*$/,
                   message: 'Invalid phone number'
@@ -169,6 +266,72 @@ const UserForm = ({ onSubmit, loading, onClose, defaultValues }) => {
               <p className="mt-1 text-sm text-red-600">{errors.phoneNumber.message}</p>
             )}
           </div>
+
+          {/* Registration Number (only for students) */}
+          {watch('role') === 'student' && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Registration Number</label>
+              <input
+                type="text"
+                {...register('regNumber', {
+                  required: 'Registration number is required for students'
+                })}
+                className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+              {errors.regNumber && (
+                <p className="mt-1 text-sm text-red-600">{errors.regNumber.message}</p>
+              )}
+            </div>
+          )}
+
+          {/* Course Selection (only for teachers and students) */}
+          {(watch('role') === 'teacher' || watch('role') === 'student') && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Course</label>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={courseSearch}
+                  onChange={(e) => setCourseSearch(e.target.value)}
+                  placeholder="Search for a course..."
+                  className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+                {courseSearch && (
+                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+                    {courses
+                      .filter(course => 
+                        course.name.toLowerCase().includes(courseSearch.toLowerCase()) ||
+                        course.code.toLowerCase().includes(courseSearch.toLowerCase())
+                      )
+                      .map(course => (
+                        <div
+                          key={course._id}
+                          onClick={() => {
+                            setSelectedCourse(course);
+                            setCourseSearch(`${course.code} - ${course.name}`);
+                          }}
+                          className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                        >
+                          <div className="font-medium">{course.code} - {course.name}</div>
+                          {course.department?.name && (
+                            <div className="text-sm text-gray-500">{course.department.name}</div>
+                          )}
+                        </div>
+                      ))
+                    }
+                  </div>
+                )}
+              </div>
+              {selectedCourse && (
+                <p className="mt-1 text-sm text-green-600">
+                  Selected: {selectedCourse.code} - {selectedCourse.name}
+                </p>
+              )}
+              {(watch('role') === 'teacher' || watch('role') === 'student') && !selectedCourse && (
+                <p className="mt-1 text-sm text-red-600">Course is required for teachers and students</p>
+              )}
+            </div>
+          )}
         </div>
       </div>
 

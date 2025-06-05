@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import TeacherSidebar from '@/components/TeacherSidebar';
 
 export default function TeacherLayout({ children }) {
   const router = useRouter();
@@ -28,8 +29,9 @@ export default function TeacherLayout({ children }) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <main>{children}</main>
+    <div className="min-h-screen bg-gray-50 flex">
+      <TeacherSidebar />
+      <main className="flex-1 p-6">{children}</main>
     </div>
   );
 }
