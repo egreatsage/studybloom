@@ -7,11 +7,9 @@ import CalendarView from '@/components/timetable/CalendarView';
 import LectureCard from '@/components/timetable/LectureCard';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import AttendanceManager from '@/components/teacher/AttendanceManager';
-import AttendanceReport from '@/components/teacher/AttendanceReport'; // Import the new component
-import { FaCalendarAlt, FaList, FaFilter, FaRegCalendarCheck, FaPrint } from 'react-icons/fa';
-import toast from 'react-hot-toast';
+import { FaCalendarAlt, FaList, FaDownload, FaFilter, FaRegCalendarCheck } from 'react-icons/fa';
 
-export default function   TeacherSchedule() {
+export default function TeacherSchedule() {
   const { data: session } = useSession();
   const [lectures, setLectures] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,9 +17,6 @@ export default function   TeacherSchedule() {
   const [view, setView] = useState('week'); // week, calendar, list
   const [selectedLecture, setSelectedLecture] = useState(null);
   const [managingAttendance, setManagingAttendance] = useState(null); 
-  const [showReport, setShowReport] = useState(false);
-  const [reportData, setReportData] = useState(null);
-  const [reportDateRange, setReportDateRange] = useState({ start: '', end: '' });
   const [filter, setFilter] = useState({
     semester: 'all',
     course: 'all',
@@ -63,27 +58,6 @@ export default function   TeacherSchedule() {
       }
   };
 
-  const handleGenerateReport = async () => {
-    if (!reportDateRange.start || !reportDateRange.end) {
-        toast.error("please select a date range",{duration: 3000})
-        return;
-    }
-    setLoading(true);
-    try {
-        const response = await fetch(`/api/teachers/attendance-report?startDate=${reportDateRange.start}&endDate=${reportDateRange.end}`);
-        if (!response.ok) {
-            throw new Error('Failed to generate report');
-        }
-        const data = await response.json();
-        setReportData(data.reportData);
-        setShowReport(true);
-    } catch (error) {
-        setError(error.message);
-    } finally {
-        setLoading(false);
-    }
-  };
-
   useEffect(() => {
     if (session?.user?.id) {
       fetchTeacherSchedule();
@@ -110,8 +84,11 @@ export default function   TeacherSchedule() {
     }
   };
 
+  const handleExportSchedule = async (format = 'ical') => {
+    // implementation
+  };
+
   const filteredLectures = lectures.filter(lecture => {
-    // implementation from previous step
     if (filter.semester !== 'all' && lecture.timetable?.semester?._id !== filter.semester) return false;
     if (filter.course !== 'all' && lecture.timetable?.course?._id !== filter.course) return false;
     if (filter.unit !== 'all' && lecture.unit._id !== filter.unit) return false;
@@ -123,7 +100,7 @@ export default function   TeacherSchedule() {
   const uniqueUnits = [...new Set(lectures.map(l => l.unit._id))];
 
 
-  if (loading && !showReport) return <LoadingSpinner />;
+  if (loading) return <LoadingSpinner />;
 
   return (
     <div className="space-y-6">
@@ -134,48 +111,24 @@ export default function   TeacherSchedule() {
               onClose={() => setManagingAttendance(null)}
           />
       )}
-      {showReport && (
-          <AttendanceReport
-              reportData={reportData}
-              teacherName={session.user.name}
-              dateRange={reportDateRange}
-              onClose={() => setShowReport(false)}
-          />
-      )}
+
       {/* Header */}
       <div className="bg-white rounded-lg shadow p-6">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold">My Teaching Schedule</h1>
           <div className="flex gap-2">
+            <button
+              onClick={() => handleExportSchedule('ical')}
+              className="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center gap-2"
+            >
+              <FaDownload /> Export to Calendar
+            </button>
           </div>
         </div>
-        {/* View Switcher and Filters */}
-        {/* ... (code from previous step) ... */}
-
-        {/* Report Generation UI */}
-        <div className="mt-6 pt-4 border-t">
-            <h3 className="font-semibold text-gray-700 mb-2">Generate Attendance Report</h3>
-            <div className="flex flex-wrap items-end gap-4">
-                <div>
-                    <label htmlFor="report-start" className="text-sm text-gray-600 block">Start Date</label>
-                    <input type="date" id="report-start" className="px-3 py-1 border rounded" value={reportDateRange.start} onChange={e => setReportDateRange(prev => ({...prev, start: e.target.value}))}/>
-                </div>
-                <div>
-                    <label htmlFor="report-end" className="text-sm text-gray-600 block">End Date</label>
-                    <input type="date" id="report-end" className="px-3 py-1 border rounded" value={reportDateRange.end} onChange={e => setReportDateRange(prev => ({...prev, end: e.target.value}))}/>
-                </div>
-                <button
-                    onClick={handleGenerateReport}
-                    className="px-4 py-2 text-sm bg-green-600 text-white rounded hover:bg-green-700 flex items-center gap-2"
-                >
-                    <FaPrint /> Generate Report
-                </button>
-            </div>
-        </div>
+        {/* View Switcher and Filters can remain here */}
       </div>
 
       {/* Schedule Display */}
-      {/* ... (rest of the component JSX from previous step) ... */}
       {error ? (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
           {error}
@@ -235,8 +188,6 @@ export default function   TeacherSchedule() {
             <LectureCard lecture={selectedLecture} showDetails={true} />
             
             <div className="mt-6 space-y-4">
-              {/* ... (modal content from previous step) ... */}
-
               <div className="flex gap-2 mt-6">
                 <button
                   onClick={() => handleManageAttendance(selectedLecture)}
