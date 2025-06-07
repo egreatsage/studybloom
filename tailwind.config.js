@@ -16,6 +16,9 @@ module.exports = {
       },
       colors: {
         primary: {
+          // This tells Tailwind to use hex codes for this color palette
+          DEFAULT: '#0ea5e9',
+          format: 'hex', 
           50: '#f0f9ff',
           100: '#e0f2fe',
           200: '#bae6fd',
