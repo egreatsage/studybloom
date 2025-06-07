@@ -244,23 +244,23 @@ export async function DELETE(request) {
     }
 
     // Only allow deletion of draft timetables
-    if (timetable.status !== 'draft') {
-      return NextResponse.json(
-        { error: 'Can only delete draft timetables' },
-        { status: 400 }
-      );
-    }
+    // if (timetable.status !== 'draft') {
+    //   return NextResponse.json(
+    //     { error: 'Can only delete draft timetables' },
+    //     { status: 400 }
+    //   );
+    // }
 
-    // Check if there are any lectures associated with this timetable
-    const Lecture = (await import('@/models/Lecture')).default;
-    const lectureCount = await Lecture.countDocuments({ timetable: id });
+    // // Check if there are any lectures associated with this timetable
+    // const Lecture = (await import('@/models/Lecture')).default;
+    // const lectureCount = await Lecture.countDocuments({ timetable: id });
     
-    if (lectureCount > 0) {
-      return NextResponse.json(
-        { error: 'Cannot delete timetable with associated lectures' },
-        { status: 400 }
-      );
-    }
+    // if (lectureCount > 0) {
+    //   return NextResponse.json(
+    //     { error: 'Cannot delete timetable with associated lectures' },
+    //     { status: 400 }
+    //   );
+    // }
 
     await timetable.deleteOne();
 

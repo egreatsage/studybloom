@@ -6,6 +6,8 @@ const useTimetableStore = create((set, get) => ({
   currentTimetable: null,
   lectures: [],
   venues: [],
+  units: [],
+  teachers: [],
   filters: {},
   view: 'week', // 'day', 'week', 'month'
   loading: false,
@@ -137,6 +139,29 @@ const useTimetableStore = create((set, get) => ({
     }
   },
 
+  deleteTimetable: async (timetableId) => {
+    set({ loading: true, error: null });
+    try {
+      const response = await fetch(`/api/timetables?id=${timetableId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to delete timetable');
+      }
+
+      set(state => ({
+        timetables: state.timetables.filter(timetable => timetable._id !== timetableId),
+        loading: false
+      }));
+    } catch (error) {
+      set({ error: error.message, loading: false });
+      throw error;
+    }
+  },
+
   publishTimetable: async (timetableId) => {
     set({ loading: true, error: null });
     try {
@@ -256,12 +281,55 @@ const useTimetableStore = create((set, get) => ({
     }
   },
 
-  // Clear store
+  // Fetch teachers from users with role=teacher
+  fetchTeachers: async () => {
+    set({ loading: true, error: null });
+    try {
+      const response = await fetch('/api/users?role=teacher', {
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch teachers');
+      }
+
+      const teachers = await response.json();
+      set({ teachers, loading: false });
+      return teachers;
+    } catch (error) {
+      set({ error: error.message, loading: false });
+      throw error;
+    }
+  },
+
+  // Fetch units for a course
+  fetchUnits: async (courseId) => {
+    set({ loading: true, error: null });
+    try {
+      const response = await fetch(`/api/units?courseId=${courseId}`, {
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch units');
+      }
+
+      const units = await response.json();
+      set({ units, loading: false });
+      return units;
+    } catch (error) {
+      set({ error: error.message, loading: false });
+      throw error;
+    }
+  },
+
   clearStore: () => set({
     timetables: [],
     currentTimetable: null,
     lectures: [],
     venues: [],
+    units: [],
+    teachers: [],
     filters: {},
     view: 'week',
     loading: false,

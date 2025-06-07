@@ -12,7 +12,15 @@ export async function GET(request) {
     }
 
     await connectDB();
-    const users = await User.find({})
+    
+    // Get role from query params
+    const { searchParams } = new URL(request.url);
+    const role = searchParams.get('role');
+    
+    // Build query
+    const query = role ? { role } : {};
+    
+    const users = await User.find(query)
       .select('-password')
       .populate('course', 'name code');
     return NextResponse.json(users);

@@ -7,6 +7,8 @@ import semesterStore from '@/lib/stores/semesterStore';
 import courseStore from '@/lib/stores/courseStore';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { FaPlus, FaEdit, FaTrash, FaCheck, FaArchive, FaEye } from 'react-icons/fa';
+import { toast } from 'react-hot-toast';
+import { confirmDialog } from '@/lib/utils/confirmDialog';
 
 export default function TimetableManager() {
   const router = useRouter();
@@ -71,21 +73,31 @@ export default function TimetableManager() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this timetable?')) {
+    const confirmed = await confirmDialog('Are you sure you want to delete this timetable? Note: Timetables with scheduled lectures cannot be deleted.');
+    if (confirmed) {
       try {
         await deleteTimetable(id);
+        toast.success('Timetable deleted successfully');
       } catch (error) {
         console.error('Error deleting timetable:', error);
+        if (error.message === 'Cannot delete timetable with associated lectures') {
+          toast.error('This timetable has scheduled lectures. Please delete all lectures first before deleting the timetable.');
+        } else {
+          toast.error(error.message || 'Failed to delete timetable');
+        }
       }
     }
   };
 
   const handlePublish = async (id) => {
-    if (window.confirm('Are you sure you want to publish this timetable? This will make it visible to students and teachers.')) {
+    const confirmed = await confirmDialog('Are you sure you want to publish this timetable? This will make it visible to students and teachers.');
+    if (confirmed) {
       try {
         await publishTimetable(id);
+        toast.success('Timetable published successfully');
       } catch (error) {
         console.error('Error publishing timetable:', error);
+        toast.error(error.message || 'Failed to publish timetable');
       }
     }
   };
