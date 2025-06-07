@@ -35,10 +35,10 @@ const useSemesterStore = create((set) => ({
         semesters: [...state.semesters, data.semester],
         loading: false,
       }));
-      toast.success('Semester added successfully', { duration: 2000 });
+      toast.success('Semester added successfully', { duration: 3000 });
     } catch (error) {
       set({ error: error.message, loading: false });
-      toast.error(`Failed to add semester: ${error.message}`, { duration: 2000 });
+      toast.error(`Failed to add semester: ${error.message}`, { duration: 3000 });
     }
   },
 

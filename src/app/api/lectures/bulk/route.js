@@ -42,12 +42,12 @@ export async function POST(request) {
       );
     }
 
-    if (timetable.status !== 'draft') {
-      return NextResponse.json(
-        { error: 'Can only add lectures to draft timetables' },
-        { status: 400 }
-      );
-    }
+    // if (timetable.status !== 'draft') {
+    //   return NextResponse.json(
+    //     { error: 'Can only add lectures to draft timetables' },
+    //     { status: 400 }
+    //   );
+    // }
 
     // Validate and create lectures
     const createdLectures = [];

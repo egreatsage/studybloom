@@ -14,8 +14,9 @@ import {
 } from 'react-icons/fa';
 
 const menuItems = [
-  { path: '/teacher/courses', icon: FaChalkboardTeacher, label: 'My Courses' },
+  { path: '/teacher', icon: FaChalkboardTeacher, label: 'Dashboard' },
   { path: '/teacher/schedule', icon: FaCalendarAlt, label: 'My Schedule' },
+  { path: '/teacher/attendance', icon: FaClipboardList, label: 'Attendance' },
   { path: '/teacher/assignments', icon: FaClipboardList, label: 'Assignments' },
 ];
 

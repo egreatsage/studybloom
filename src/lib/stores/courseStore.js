@@ -17,11 +17,11 @@ const useCourseStore = create((set) => ({
       const courses = Array.isArray(data) ? data : data.courses || [];
       set({ courses, loading: false });
       if (data.courses?.length === 0) {
-        toast('No courses found', { icon: 'ℹ️', duration: 2000 });
+        toast('No courses found', { icon: 'ℹ️', duration: 3000 });
       }
     } catch (error) {
       set({ error: error.message, loading: false });
-      toast(`Failed to fetch courses: ${error.message}`, { icon: '❌', duration: 2000 });
+      toast(`Failed to fetch courses: ${error.message}`, { icon: '❌', duration: 3000 });
     }
   },
 
@@ -56,10 +56,10 @@ const useCourseStore = create((set) => ({
         courses: [...state.courses, newCourse],
         loading: false,
       }));
-      toast('Course added successfully', { icon: '✅', duration: 2000 });
+      toast('Course added successfully', { icon: '✅', duration: 3000 });
     } catch (error) {
       set({ error: error.message, loading: false });
-      toast(`Failed to add course: ${error.message}`, { icon: '❌', duration: 2000 });
+      toast(`Failed to add course: ${error.message}`, { icon: '❌', duration: 3000 });
     }
   },
 
@@ -87,10 +87,10 @@ const useCourseStore = create((set) => ({
         ),
         loading: false,
       }));
-      toast('Course updated successfully', { icon: '✅', duration: 2000 });
+      toast('Course updated successfully', { icon: '✅', duration: 3000 });
     } catch (error) {
       set({ error: error.message, loading: false });
-      toast(`Failed to edit course: ${error.message}`, { icon: '❌', duration: 2000 });
+      toast(`Failed to edit course: ${error.message}`, { icon: '❌', duration: 3000 });
     }
   },
 
@@ -105,10 +105,10 @@ const useCourseStore = create((set) => ({
         courses: state.courses.filter((course) => course._id !== id),
         loading: false,
       }));
-      toast('Course deleted successfully', { icon: '✅', duration: 2000 });
+      toast('Course deleted successfully', { icon: '✅', duration: 3000 });
     } catch (error) {
       set({ error: error.message, loading: false });
-      toast(`Failed to delete course: ${error.message}`, { icon: '❌', duration: 2000 });
+      toast(`Failed to delete course: ${error.message}`, { icon: '❌', duration: 3000 });
     }
   },
 }));

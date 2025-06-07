@@ -112,7 +112,7 @@ export default function SemesterManager() {
         // toast.success('Semester updated successfully!');
       } else {
         await addSemester(semesterData);
-        // toast.success('Semester added successfully!',{duration:2000});
+        // toast.success('Semester added successfully!',{duration: 3000});
       }
       setSelectedSemester(null);
       await fetchSemesters();

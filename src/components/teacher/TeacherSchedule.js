@@ -8,9 +8,10 @@ import LectureCard from '@/components/timetable/LectureCard';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import AttendanceManager from '@/components/teacher/AttendanceManager';
 import AttendanceReport from '@/components/teacher/AttendanceReport'; // Import the new component
-import { FaCalendarAlt, FaList, FaDownload, FaFilter, FaRegCalendarCheck, FaPrint } from 'react-icons/fa';
+import { FaCalendarAlt, FaList, FaFilter, FaRegCalendarCheck, FaPrint } from 'react-icons/fa';
+import toast from 'react-hot-toast';
 
-export default function TeacherSchedule() {
+export default function   TeacherSchedule() {
   const { data: session } = useSession();
   const [lectures, setLectures] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -64,7 +65,7 @@ export default function TeacherSchedule() {
 
   const handleGenerateReport = async () => {
     if (!reportDateRange.start || !reportDateRange.end) {
-        alert("Please select a start and end date for the report.");
+        toast.error("please select a date range",{duration: 3000})
         return;
     }
     setLoading(true);
@@ -109,11 +110,6 @@ export default function TeacherSchedule() {
     }
   };
 
-  // ... (keep existing functions like handleExportSchedule, filteredLectures, unique items)
-  const handleExportSchedule = async (format = 'ical') => {
-    // implementation from previous step
-  };
-
   const filteredLectures = lectures.filter(lecture => {
     // implementation from previous step
     if (filter.semester !== 'all' && lecture.timetable?.semester?._id !== filter.semester) return false;
@@ -151,12 +147,6 @@ export default function TeacherSchedule() {
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold">My Teaching Schedule</h1>
           <div className="flex gap-2">
-            <button
-              onClick={() => handleExportSchedule('ical')}
-              className="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center gap-2"
-            >
-              <FaDownload /> Export to Calendar
-            </button>
           </div>
         </div>
         {/* View Switcher and Filters */}

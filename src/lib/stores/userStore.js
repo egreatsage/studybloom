@@ -20,7 +20,7 @@ const useUserStore = create((set) => ({
       } 
     } catch (error) {
       set({ error: error.message, loading: false });
-      toast.error(`Fetch users failed: ${error.message}`, { duration: 2000 });
+      toast.error(`Fetch users failed: ${error.message}`, { duration: 3000 });
     }
   },
 
@@ -37,7 +37,7 @@ const useUserStore = create((set) => ({
       toast('success, user added !', { icon: 'ℹ️' });
     } catch (error) {
       set({ error: error.message, loading: false });
-      toast.error(`Add user failed: ${error.message}`, { duration: 2000 });
+      toast.error(`Add user failed: ${error.message}`, { duration: 3000 });
     }
   },
 
@@ -54,10 +54,10 @@ const useUserStore = create((set) => ({
         users: state.users.map((user) => (user._id === id ? data : user)),
         loading: false,
       }));
-      toast.success('User updated successfully', { duration: 2000 });
+      toast.success('User updated successfully', { duration: 3000 });
     } catch (error) {
       set({ error: error.message, loading: false });
-      toast.error(`Edit user failed: ${error.message}`, { duration: 2000 });
+      toast.error(`Edit user failed: ${error.message}`, { duration: 3000 });
     }
   },
 
@@ -72,10 +72,10 @@ const useUserStore = create((set) => ({
         users: state.users.filter((user) => user._id !== id),
         loading: false,
       }));
-      toast.success('User deleted successfully', { duration: 2000 });
+      toast.success('User deleted successfully', { duration: 3000 });
     } catch (error) {
       set({ error: error.message, loading: false });
-      toast.error(`Delete user failed: ${error.message}`, { duration: 2000 });
+      toast.error(`Delete user failed: ${error.message}`, { duration: 3000 });
     }
   },
 }));

@@ -57,7 +57,7 @@ const useTeachingStore = create((set, get) => ({
         assignments: [...state.assignments, newAssignment]
       }));
       
-      toast.success('Teacher assigned successfully', { duration: 2000 });
+      toast.success('Teacher assigned successfully', { duration: 3000 });
       return newAssignment;
     } catch (error) {
       set({ error: error.message });
@@ -82,7 +82,7 @@ const useTeachingStore = create((set, get) => ({
         assignments: state.assignments.filter(a => a._id !== assignmentId)
       }));
       
-      toast.success('Teaching assignment removed', { duration: 2000 });
+      toast.success('Teaching assignment removed', { duration: 3000 });
     } catch (error) {
       set({ error: error.message });
       toast.error('Failed to remove teaching assignment');

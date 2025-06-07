@@ -15,11 +15,11 @@ const useDepartmentStore = create((set) => ({
       const data = await res.json();
       set({ departments: data.departments || [], loading: false });
       if (data.departments?.length === 0) {
-        toast('No departments found', { icon: 'ℹ️', duration: 2000 });
+        toast('No departments found', { icon: 'ℹ️', duration: 3000 });
       }
     } catch (error) {
       set({ error: error.message, loading: false });
-      toast(`Failed to fetch departments: ${error.message}`, { icon: '❌', duration: 2000 });
+      toast(`Failed to fetch departments: ${error.message}`, { icon: '❌', duration: 3000 });
     }
   },
 
@@ -36,10 +36,10 @@ const useDepartmentStore = create((set) => ({
         departments: [...state.departments, data.department],
         loading: false,
       }));
-      toast('Department added successfully', { icon: '✅', duration: 2000 });
+      toast('Department added successfully', { icon: '✅', duration: 3000 });
     } catch (error) {
       set({ error: error.message, loading: false });
-      toast(`Failed to add department: ${error.message}`, { icon: '❌', duration: 2000 });
+      toast(`Failed to add department: ${error.message}`, { icon: '❌', duration: 3000 });
     }
   },
 
@@ -58,10 +58,10 @@ const useDepartmentStore = create((set) => ({
         ),
         loading: false,
       }));
-      toast('Department updated successfully', { icon: '✅', duration: 2000 });
+      toast('Department updated successfully', { icon: '✅', duration: 3000 });
     } catch (error) {
       set({ error: error.message, loading: false });
-      toast(`Failed to edit department: ${error.message}`, { icon: '❌', duration: 2000 });
+      toast(`Failed to edit department: ${error.message}`, { icon: '❌', duration: 3000 });
     }
   },
 
@@ -76,10 +76,10 @@ const useDepartmentStore = create((set) => ({
         departments: state.departments.filter((dept) => dept._id !== id),
         loading: false,
       }));
-      toast('Department deleted successfully', { icon: '✅', duration: 2000 });
+      toast('Department deleted successfully', { icon: '✅', duration: 3000 });
     } catch (error) {
       set({ error: error.message, loading: false });
-      toast(`Failed to delete department: ${error.message}`, { icon: '❌', duration: 2000 });
+      toast(`Failed to delete department: ${error.message}`, { icon: '❌', duration: 3000 });
     }
   },
 }));

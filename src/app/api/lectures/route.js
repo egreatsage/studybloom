@@ -106,12 +106,12 @@ export async function POST(request) {
       );
     }
 
-    if (timetableDoc.status !== 'draft') {
-      return NextResponse.json(
-        { error: 'Can only add lectures to draft timetables' },
-        { status: 400 }
-      );
-    }
+    // if (timetableDoc.status !== 'draft') {
+    //   return NextResponse.json(
+    //     { error: 'Can only add lectures to draft timetables' },
+    //     { status: 400 }
+    //   );
+    // }
 
     // Validate unit exists
     const unitDoc = await Unit.findById(unit);

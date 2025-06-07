@@ -19,7 +19,7 @@ const useUnitStore = create((set, get) => ({
       set({ units: data });
     } catch (error) {
       set({ error: error.message });
-      toast.error('Failed to load units', { duration: 2000 });
+      toast.error('Failed to load units', { duration: 3000 });
     } finally {
       set({ loading: false });
     }
@@ -36,7 +36,7 @@ const useUnitStore = create((set, get) => ({
       return data;
     } catch (error) {
       set({ error: error.message });
-      toast.error('Failed to load unit', { duration: 2000 });
+      toast.error('Failed to load unit', { duration: 3000 });
       throw error;
     } finally {
       set({ loading: false });
@@ -63,11 +63,11 @@ const useUnitStore = create((set, get) => ({
         units: [...state.units, newUnit]
       }));
       
-      toast.success('Unit created successfully', { duration: 2000 });
+      toast.success('Unit created successfully', { duration: 3000 });
       return newUnit;
     } catch (error) {
       set({ error: error.message });
-      toast.error(error.message || 'Failed to create unit', { duration: 2000 });
+      toast.error(error.message || 'Failed to create unit', { duration: 3000 });
       throw error;
     } finally {
       set({ loading: false });
@@ -95,11 +95,11 @@ const useUnitStore = create((set, get) => ({
         currentUnit: state.currentUnit?._id === unitId ? updatedUnit : state.currentUnit
       }));
       
-      toast.success('Unit updated successfully', { duration: 2000 });
+      toast.success('Unit updated successfully', { duration: 3000 });
       return updatedUnit;
     } catch (error) {
       set({ error: error.message });
-      toast.error(error.message || 'Failed to update unit', { duration: 2000 });
+      toast.error(error.message || 'Failed to update unit', { duration: 3000 });
       throw error;
     } finally {
       set({ loading: false });
@@ -121,10 +121,10 @@ const useUnitStore = create((set, get) => ({
         currentUnit: state.currentUnit?._id === unitId ? null : state.currentUnit
       }));
       
-      toast.success('Unit deleted successfully', { duration: 2000 });
+      toast.success('Unit deleted successfully', { duration: 3000 });
     } catch (error) {
       set({ error: error.message });
-      toast.error('Failed to delete unit', { duration: 2000 });
+      toast.error('Failed to delete unit', { duration: 3000 });
       throw error;
     } finally {
       set({ loading: false });
