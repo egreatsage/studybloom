@@ -14,7 +14,11 @@ export async function POST(request, { params }) {
 
     await connectDB();
 
-    const { id } = params;
+    const { id } = await  params; // This syntax is correct.
+
+    if (!id) {
+        return NextResponse.json({ error: 'Timetable ID is required' }, { status: 400 });
+    }
 
     const timetable = await Timetable.findById(id);
     if (!timetable) {
@@ -65,16 +69,16 @@ export async function POST(request, { params }) {
     // Publish the timetable
     await timetable.publish();
 
-    // Populate references
-    await timetable.populate([
-      { path: 'semester', select: 'name startDate endDate' },
-      { path: 'course', select: 'name code' },
-      { path: 'createdBy', select: 'name email' }
-    ]);
+    // Populate references for the response
+    const populatedTimetable = await Timetable.findById(id)
+        .populate('semester', 'name startDate endDate')
+        .populate('course', 'name code')
+        .populate('createdBy', 'name email');
+
 
     return NextResponse.json({
       message: 'Timetable published successfully',
-      timetable
+      timetable: populatedTimetable // Ensure the response is nested correctly
     });
   } catch (error) {
     console.error('Error publishing timetable:', error);

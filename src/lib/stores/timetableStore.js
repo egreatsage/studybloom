@@ -198,11 +198,13 @@ const useTimetableStore = create((set, get) => ({
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to publish timetable');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to publish timetable');
       }
 
-      const publishedTimetable = await response.json();
+      const responseData = await response.json();
+      const publishedTimetable = responseData.timetable; // Correctly access the nested timetable object
+
       set(state => ({
         timetables: state.timetables.map(timetable =>
           timetable._id === timetableId ? publishedTimetable : timetable
