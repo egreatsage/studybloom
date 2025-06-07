@@ -90,8 +90,7 @@ export default function TimetableManager() {
   };
 
   const handlePublish = async (id) => {
-    const confirmed = await confirmDialog('Are you sure you want to publish this timetable? This will make it visible to students and teachers.');
-    if (confirmed) {
+   
       try {
         await publishTimetable(id);
         toast.success('Timetable published successfully');
@@ -99,7 +98,7 @@ export default function TimetableManager() {
         console.error('Error publishing timetable:', error);
         toast.error(error.message || 'Failed to publish timetable');
       }
-    }
+    
   };
 
   const resetForm = () => {

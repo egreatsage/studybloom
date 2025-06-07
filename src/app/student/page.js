@@ -8,6 +8,7 @@ import SemesterInfo from '@/components/SemesterInfo';
 import UnitRegistration from '@/components/UnitRegistration';
 import RegisteredUnits from '@/components/RegisteredUnits';
 import AssignmentsList from '@/components/AssignmentsList';
+import AttendanceSummary from '@/components/student/AttendanceSummary'; // Import new component
 import LoadingSpinner from '@/components/LoadingSpinner';
 
 const StudentDashboard = () => {
@@ -64,6 +65,16 @@ const StudentDashboard = () => {
             >
               Register Units
             </button>
+             <button
+              onClick={() => setActiveTab('attendance')}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'attendance'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Attendance
+            </button>
             <button
               onClick={() => setActiveTab('assignments')}
               className={`py-2 px-1 border-b-2 font-medium text-sm ${
@@ -81,41 +92,9 @@ const StudentDashboard = () => {
       {/* Tab Content */}
       <div>
         {activeTab === 'overview' && (
-          <div className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <RegisteredUnits />
-            
-            {/* Quick Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white rounded-lg shadow p-6">
-                <h3 className="text-lg font-medium text-gray-900">Registered Units</h3>
-                <p className="text-3xl font-bold text-blue-600 mt-2">
-                  {currentRegistrations.length}
-                </p>
-                <p className="text-sm text-gray-500 mt-1">
-                  For {currentSemester?.name || 'current semester'}
-                </p>
-              </div>
-              
-              <div className="bg-white rounded-lg shadow p-6">
-                <h3 className="text-lg font-medium text-gray-900">Course</h3>
-                <p className="text-xl font-semibold text-gray-800 mt-2">
-                  {session?.user?.course?.name || 'Not Enrolled'}
-                </p>
-                <p className="text-sm text-gray-500 mt-1">
-                  {session?.user?.course?.code || ''}
-                </p>
-              </div>
-              
-              <div className="bg-white rounded-lg shadow p-6">
-                <h3 className="text-lg font-medium text-gray-900">Status</h3>
-                <p className="text-xl font-semibold text-green-600 mt-2">
-                  Active Student
-                </p>
-                <p className="text-sm text-gray-500 mt-1">
-                  {currentSemester?.isActive ? 'Semester in progress' : 'No active semester'}
-                </p>
-              </div>
-            </div>
+            <AttendanceSummary />
           </div>
         )}
 
@@ -123,6 +102,10 @@ const StudentDashboard = () => {
           <div className="space-y-6">
             <UnitRegistration />
           </div>
+        )}
+
+        {activeTab === 'attendance' && (
+            <AttendanceSummary />
         )}
 
         {activeTab === 'assignments' && (

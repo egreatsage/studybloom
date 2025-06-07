@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { format, parseISO, addMinutes } from 'date-fns';
+import { FaGlobe, FaMapMarkerAlt } from 'react-icons/fa';
 
 export default function WeeklyTimetable({ lectures = [], onLectureClick }) {
   const [timeSlots, setTimeSlots] = useState([]);
@@ -65,9 +66,34 @@ export default function WeeklyTimetable({ lectures = [], onLectureClick }) {
         <div className="text-xs">
           {lecture.startTime} - {lecture.endTime}
         </div>
-        <div className="text-xs truncate">
-          {isOnline ? '🌐 Online' : `📍 ${lecture.venue.building} ${lecture.venue.room}`}
-        </div>
+          <div className="flex items-center gap-2 my-2">
+                    {isOnline ? (
+                      <>
+                        <FaGlobe className="text-blue-400" />
+                       
+                        {lecture.metadata?.onlineLink && (
+                          <a
+                            href={lecture.metadata.onlineLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 underline text-sm"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            Online Link
+                          </a>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        <FaMapMarkerAlt className="text-gray-400" />
+                        <span>
+                          {lecture.venue?.building} {lecture.venue?.room}
+                          {lecture.venue?.capacity && ` (Capacity: ${lecture.venue.capacity})`}
+                        </span>
+                      </>
+                    )}
+                  </div>
+        
       </div>
     );
   };

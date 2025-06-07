@@ -15,7 +15,7 @@ import {
 } from 'react-icons/fa';
 
 const menuItems = [
-  { path: '/student/courses', icon: FaBook, label: 'My Courses' },
+  { path: '/student', icon: FaBook, label: 'Dashboard' },
   { path: '/student/schedule', icon: FaCalendarAlt, label: 'My Schedule' },
   { path: '/student/assignments', icon: FaClipboardList, label: 'Assignments' },
   { path: '/student/grades', icon: FaGraduationCap, label: 'Grades' },

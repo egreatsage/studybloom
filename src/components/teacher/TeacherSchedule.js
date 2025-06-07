@@ -6,7 +6,8 @@ import WeeklyTimetable from '@/components/timetable/WeeklyTimetable';
 import CalendarView from '@/components/timetable/CalendarView';
 import LectureCard from '@/components/timetable/LectureCard';
 import LoadingSpinner from '@/components/LoadingSpinner';
-import { FaCalendarAlt, FaList, FaDownload, FaFilter } from 'react-icons/fa';
+import AttendanceManager from '@/components/teacher/AttendanceManager';
+import { FaCalendarAlt, FaList, FaDownload, FaFilter, FaRegCalendarCheck } from 'react-icons/fa';
 
 export default function TeacherSchedule() {
   const { data: session } = useSession();
@@ -15,11 +16,45 @@ export default function TeacherSchedule() {
   const [error, setError] = useState(null);
   const [view, setView] = useState('week'); // week, calendar, list
   const [selectedLecture, setSelectedLecture] = useState(null);
+  const [managingAttendance, setManagingAttendance] = useState(null); // Will hold { lecture, instance }
   const [filter, setFilter] = useState({
     semester: 'all',
     course: 'all',
     unit: 'all'
   });
+
+  // Simplified fetch. In a real app, you would fetch instances as needed.
+  // For this implementation, we assume a lecture maps to a recent/upcoming instance.
+  const findOrCreateLectureInstance = async (lecture) => {
+      // In a real app, you would have more robust logic to find the correct instance
+      // based on the current date. For now, we'll create one if it doesn't exist for today.
+      const today = new Date().toISOString().split('T')[0];
+      const response = await fetch(`/api/lecture-instances?lectureId=${lecture._id}&date=${today}`);
+      let instances = await response.json();
+
+      if (instances.length > 0) {
+          return instances[0];
+      } else {
+          // If no instance for today, create one (demo purpose)
+          const createResponse = await fetch('/api/lecture-instances', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                  lectureId: lecture._id,
+                  date: new Date()
+              }),
+          });
+          return await createResponse.json();
+      }
+  };
+
+  const handleManageAttendance = async (lecture) => {
+      const instance = await findOrCreateLectureInstance(lecture);
+      if(instance) {
+        setManagingAttendance({ lecture, instance });
+        setSelectedLecture(null);
+      }
+  };
 
   useEffect(() => {
     if (session?.user?.id) {
@@ -86,6 +121,13 @@ export default function TeacherSchedule() {
 
   return (
     <div className="space-y-6">
+      {managingAttendance && (
+          <AttendanceManager 
+              lecture={managingAttendance.lecture}
+              lectureInstance={managingAttendance.instance}
+              onClose={() => setManagingAttendance(null)}
+          />
+      )}
       {/* Header */}
       <div className="bg-white rounded-lg shadow p-6">
         <div className="flex justify-between items-center mb-4">
@@ -258,13 +300,10 @@ export default function TeacherSchedule() {
 
               <div className="flex gap-2 mt-6">
                 <button
-                  onClick={() => {
-                    // Handle manage attendance
-                    console.log('Manage attendance for', selectedLecture._id);
-                  }}
-                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                  onClick={() => handleManageAttendance(selectedLecture)}
+                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center gap-2"
                 >
-                  Manage Attendance
+                  <FaRegCalendarCheck /> Manage Attendance
                 </button>
                 <button
                   onClick={() => {

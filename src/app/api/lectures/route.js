@@ -82,10 +82,12 @@ export async function POST(request) {
     // Validate required fields
     if (!timetable || !unit || !teacher || dayOfWeek === undefined || !startTime || !endTime) {
       return NextResponse.json(
+      
         { error: 'Missing required fields' },
         { status: 400 }
       );
     }
+    
 
     // For non-online lectures, venue is required
     if (!metadata?.isOnline && !venue) {

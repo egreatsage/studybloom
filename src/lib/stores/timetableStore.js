@@ -87,6 +87,33 @@ const useTimetableStore = create((set, get) => ({
     }
   },
 
+   createTimetable: async (timetableData) => {
+    set({ loading: true, error: null });
+    try {
+      const response = await fetch('/api/timetables', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(timetableData)
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to create timetable');
+      }
+
+      const newTimetable = await response.json();
+      set(state => ({
+        timetables: [...state.timetables, newTimetable],
+        loading: false
+      }));
+      return newTimetable;
+    } catch (error) {
+      set({ error: error.message, loading: false });
+      throw error;
+    }
+  },
+
   updateLecture: async (lectureId, updates) => {
     set({ loading: true, error: null });
     try {
