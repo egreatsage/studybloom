@@ -8,10 +8,10 @@ const submissionSchema = new Schema({
     ref: 'User',
     required: true
   },
-  fileUrl: { 
-    type: String,
-    required: true
-  },
+  files: [{
+    url: { type: String, required: true },
+    name: { type: String, required: true },
+  }],
   submittedAt: { 
     type: Date,
     default: Date.now
@@ -19,7 +19,19 @@ const submissionSchema = new Schema({
   grade: { 
     type: Number,
     min: 0,
-    max: 100
+    max: 100,
+    default: null
+  },
+  feedback: {
+    type: String,
+    trim: true
+  },
+  gradedBy: {
+    type: Schema.Types.ObjectId,
+    ref: 'User'
+  },
+  gradedAt: {
+    type: Date
   }
 }, {
   timestamps: true
@@ -57,8 +69,10 @@ const assignmentSchema = new Schema({
   timestamps: true 
 });
 
-// Index on course for faster queries when listing assignments by course
+// Index for faster queries
+assignmentSchema.index({ unit: 1 });
 assignmentSchema.index({ course: 1 });
+assignmentSchema.index({ 'submissions.student': 1 });
 
 const Assignment = (models && models.Assignment) || model('Assignment', assignmentSchema);
 
