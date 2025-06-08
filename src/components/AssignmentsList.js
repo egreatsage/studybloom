@@ -1,22 +1,28 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { FaEdit, FaTrash, FaEye } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaEye, FaLink } from 'react-icons/fa'; // Import FaLink
 import useAssignmentStore from '@/lib/stores/assignmentStore';
 import AssignmentDetails from './AssignmentDetails';
 import LoadingSpinner from './LoadingSpinner';
+
+
 
 const AssignmentsList = ({ unitId, isTeacher = false, onEdit, onDelete }) => {
   const { assignments, loading, error, fetchAssignments } = useAssignmentStore();
   const [selectedAssignment, setSelectedAssignment] = useState(null);
 
-  // Fetch assignments only when unitId changes
   useEffect(() => {
     if (unitId) {
       fetchAssignments(unitId);
     }
-  }, [unitId]); // FIX: Only depend on unitId
-
+  }, [unitId]);
+  
+const createDownloadableLink = (url) => {
+    if (!url) return '#';
+    // Inserts 'fl_attachment/' after '/upload/' to force download
+    return url.replace('/upload/', '/upload/fl_attachment/');
+};
   if (loading) {
     return <div className="flex justify-center p-4"><LoadingSpinner /></div>;
   }
@@ -56,6 +62,20 @@ const AssignmentsList = ({ unitId, isTeacher = false, onEdit, onDelete }) => {
             <div>
               <h3 className="text-lg font-semibold">{assignment.title}</h3>
               <p className="text-gray-600 mt-1">{assignment.description}</p>
+              
+              {/* ADDED: Display link to assignment file */}
+              {assignment.fileUrl && (
+                <a
+                  href={createDownloadableLink(assignment.fileUrl)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                 className="text-sm text-blue-600 hover:underline mt-2 inline-flex items-center gap-1"
+                >
+                  <FaLink />
+                  View Attachment
+                </a>
+              )}
+              
               <p className="text-sm text-gray-500 mt-2">
                 Due: {new Date(assignment.dueDate).toLocaleString()}
               </p>

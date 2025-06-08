@@ -45,6 +45,9 @@ const assignmentSchema = new Schema({
   description: { 
     type: String 
   },
+  fileUrl: { 
+    type: String,
+  },
   dueDate: { 
     type: Date,
     required: true

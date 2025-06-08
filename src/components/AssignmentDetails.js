@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { FaSpinner } from 'react-icons/fa';
+import { FaSpinner, FaLink } from 'react-icons/fa'; // Import FaLink
 import { handleError, handleSuccess, formatDate } from '@/lib/utils/errorHandler';
 import SubmissionForm from './SubmissionForm';
 import GradingInterface from './GradingInterface';
@@ -13,32 +13,9 @@ const AssignmentDetails = ({ assignment, onClose, isTeacher }) => {
 
   const isPastDue = new Date(assignment.dueDate) < new Date();
 
-  const handleSubmission = async (formData) => {
-    try {
-      setLoading(true);
-      // Handle submission logic here
-      await onSubmit(formData);
-      handleSuccess('Assignment submitted successfully');
-      setShowSubmissionForm(false);
-    } catch (error) {
-      handleError(error, 'Failed to submit assignment');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleGrading = async (submissionId, gradeData) => {
-    try {
-      setLoading(true);
-      // Handle grading logic here
-      await onGrade(submissionId, gradeData);
-      handleSuccess('Grade submitted successfully');
-    } catch (error) {
-      handleError(error, 'Failed to submit grade');
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Mock handlers since the logic resides in the parent page/store
+  const handleSubmission = async (formData) => { console.log("Submitting:", formData) };
+  const handleGrading = async (submissionId, gradeData) => { console.log("Grading:", submissionId, gradeData) };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -56,9 +33,25 @@ const AssignmentDetails = ({ assignment, onClose, isTeacher }) => {
 
         <div className="space-y-4">
           <div>
-            <h3 className="text-lg font-semibold">Description</h3>
+            <h3 className="text-lg font-semibold">Instructions</h3>
             <p className="text-gray-600 mt-1">{assignment.description}</p>
           </div>
+
+          {/* ADDED: Display link to assignment file in details view */}
+          {assignment.fileUrl && (
+            <div>
+                <h3 className="text-lg font-semibold">Attachment</h3>
+                <a
+                  href={assignment.fileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:underline mt-1 inline-flex items-center gap-2 bg-blue-50 px-3 py-2 rounded-lg"
+                >
+                  <FaLink />
+                  Download Assignment File
+                </a>
+            </div>
+          )}
 
           <div>
             <h3 className="text-lg font-semibold">Due Date</h3>

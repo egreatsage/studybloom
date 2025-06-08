@@ -4,6 +4,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]/route';
 import connectDB from '@/lib/mongodb';
 
+// ... (GET function remains the same)
 export async function GET(request) {
   try {
     const session = await getServerSession(authOptions);
@@ -45,7 +46,8 @@ export async function POST(request) {
     }
 
     const body = await request.json();
-    const { title, description, dueDate, unitId, courseId } = body;
+    // ADD `fileUrl` to destructuring
+    const { title, description, dueDate, unitId, courseId, fileUrl } = body;
 
     if (!title || !description || !dueDate || !unitId || !courseId) {
       return NextResponse.json(
@@ -59,6 +61,7 @@ export async function POST(request) {
     const assignment = await Assignment.create({
       title,
       description,
+      fileUrl, // ADD this field
       dueDate: new Date(dueDate),
       unit: unitId,
       course: courseId,
@@ -76,7 +79,7 @@ export async function POST(request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
-
+// ... (PUT and DELETE functions remain the same for now)
 export async function PUT(request) {
   try {
     const session = await getServerSession(authOptions);
@@ -85,11 +88,11 @@ export async function PUT(request) {
     }
 
     const body = await request.json();
-    const { id, title, description, dueDate } = body;
+    const { id, title, description, dueDate, fileUrl } = body; // ADD fileUrl
 
-    if (!id || (!title && !description && !dueDate)) {
+    if (!id) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: 'Missing assignment ID' },
         { status: 400 }
       );
     }
@@ -103,8 +106,7 @@ export async function PUT(request) {
         { status: 404 }
       );
     }
-
-    // Only allow teachers who created the assignment or admins to update it
+    
     if (session.user.role === 'teacher' && assignment.createdBy.toString() !== session.user.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -112,6 +114,7 @@ export async function PUT(request) {
     if (title) assignment.title = title;
     if (description) assignment.description = description;
     if (dueDate) assignment.dueDate = new Date(dueDate);
+    if (fileUrl) assignment.fileUrl = fileUrl; // ADD this line
 
     await assignment.save();
 
@@ -153,7 +156,6 @@ export async function DELETE(request) {
       );
     }
 
-    // Only allow teachers who created the assignment or admins to delete it
     if (session.user.role === 'teacher' && assignment.createdBy.toString() !== session.user.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

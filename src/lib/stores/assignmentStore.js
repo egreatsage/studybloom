@@ -74,11 +74,11 @@ const useAssignmentStore = create((set, get) => ({
          const errorData = await response.json();
         throw new Error(errorData.message || 'Failed to delete assignment');
       }
-      toast.success('Assignment deleted successfully');
+      toast.success('Assignment deleted successfully',{ duration: 3000 });
       // Re-fetch the assignments for the relevant unit
       get().fetchAssignments(unitId);
     } catch (error) {
-      toast.error(error.message || 'Failed to delete assignment');
+      toast.error(error.message || 'Failed to delete assignment',{ duration: 3000 });
       throw error;
     }
   },
