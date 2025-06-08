@@ -13,7 +13,7 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 export default function TeacherAssignmentsPage() {
   const { data: session } = useSession();
   const { assignments: teachingAssignments, fetchTeacherCourses, loading: teachingLoading } = useTeachingStore();
-  const { assignments: unitAssignments, fetchAssignments, createAssignment, updateAssignment, deleteAssignment, loading: assignmentLoading } = useAssignmentStore();
+  const { fetchAssignments, createAssignment, updateAssignment, deleteAssignment, loading: assignmentLoading } = useAssignmentStore();
 
   const [selectedCourseId, setSelectedCourseId] = useState('');
   const [selectedUnitId, setSelectedUnitId] = useState('');
@@ -24,8 +24,7 @@ export default function TeacherAssignmentsPage() {
     if (session?.user?.id) {
       fetchTeacherCourses(session.user.id);
     }
-    // FIX: Removed `fetchTeacherCourses` from dependency array
-  }, [session]);
+  }, [session, fetchTeacherCourses]);
 
   const uniqueCourses = useMemo(() => {
     if (!teachingAssignments) return [];
@@ -58,12 +57,12 @@ export default function TeacherAssignmentsPage() {
       courseId: selectedCourseId,
       unitId: selectedUnitId,
     };
+    closeModal(); // Close modal immediately for better UX
     if (editingAssignment) {
       await updateAssignment(editingAssignment._id, assignmentData);
     } else {
       await createAssignment(assignmentData);
     }
-    closeModal();
   };
   
   const openModal = (assignment = null) => {
@@ -79,10 +78,10 @@ export default function TeacherAssignmentsPage() {
   const handleDeleteAssignment = async (assignmentId) => {
     const confirmed = await confirmDialog('Are you sure you want to delete this assignment?');
     if (confirmed) {
-      await deleteAssignment(assignmentId);
+      // FIX: Pass the selectedUnitId to the delete action
+      await deleteAssignment(assignmentId, selectedUnitId);
     }
   };
-
 
   if (teachingLoading && !uniqueCourses.length) {
     return <div className="flex justify-center items-center h-64"><LoadingSpinner /></div>;

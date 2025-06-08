@@ -6,6 +6,7 @@ import TeachingAssignment from '@/models/TeachingAssignment';
 import Lecture from '@/models/Lecture';
 import Assignment from '@/models/Assignment';
 import Unit from '@/models/Unit';
+import Course from '@/models/Course';
 
 export async function GET(request) {
   try {
