@@ -179,9 +179,9 @@ export default function GradingCenterPage() {
                           <FaChevronDown className={`transition-transform ${expandedAssignmentId === assignment._id ? 'rotate-180' : ''}`} />
                         </div>
                       </div>
-                      {expandedAssignmentId === assignment._id && (
+                       {expandedAssignmentId === assignment._id && (
                         <div className="p-4 bg-white">
-                          <AssignmentSubmissions assignmentId={assignment._id} />
+                          <AssignmentSubmissions assignment={assignment} />
                         </div>
                       )}
                     </div>
