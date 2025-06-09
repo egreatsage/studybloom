@@ -380,7 +380,7 @@ export async function DELETE(request) {
     
     if (instanceCount > 0) {
       return NextResponse.json(
-        { error: 'Cannot delete lecture with existing instances' },
+        { error: 'Cannot delete this lecture as it has instances of records associated with it both past and present.This will interfere with system record keeping and updating' },
         { status: 400 }
       );
     }

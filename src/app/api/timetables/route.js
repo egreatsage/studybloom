@@ -173,7 +173,7 @@ export async function PUT(request) {
     }
 
     const data = await request.json();
-    const { effectiveFrom, effectiveTo, metadata } = data;
+    const { effectiveFrom, effectiveTo, metadata,status } = data;
 
     const timetable = await Timetable.findById(id);
     if (!timetable) {
@@ -195,7 +195,7 @@ export async function PUT(request) {
     if (effectiveFrom) timetable.effectiveFrom = new Date(effectiveFrom);
     if (effectiveTo) timetable.effectiveTo = new Date(effectiveTo);
     if (metadata) timetable.metadata = { ...timetable.metadata, ...metadata };
-
+    if (status) timetable.status = status;
     await timetable.save();
 
     // Populate references

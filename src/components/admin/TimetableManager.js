@@ -19,6 +19,7 @@ export default function TimetableManager() {
     course: '',
     effectiveFrom: '',
     effectiveTo: '',
+    status:'draft',
     metadata: {
       totalWeeks: 16,
       hoursPerWeek: 40
@@ -65,6 +66,7 @@ export default function TimetableManager() {
     setFormData({
       semester: timetable.semester._id,
       course: timetable.course._id,
+      status:timetable.status,
       effectiveFrom: new Date(timetable.effectiveFrom).toISOString().split('T')[0],
       effectiveTo: new Date(timetable.effectiveTo).toISOString().split('T')[0],
       metadata: timetable.metadata || { totalWeeks: 16, hoursPerWeek: 40 }
@@ -108,6 +110,7 @@ export default function TimetableManager() {
       course: '',
       effectiveFrom: '',
       effectiveTo: '',
+      status:'draft',
       metadata: {
         totalWeeks: 16,
         hoursPerWeek: 40
@@ -243,6 +246,19 @@ export default function TimetableManager() {
       required
     />
   </div>
+   <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <select
+                  value={formData.status}
+                  onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                  required
+                >
+                  <option value="draft">Draft</option>
+                  <option value="published">Published</option>
+                  <option value="archived">Archived</option>
+                </select>
+              </div>
 
   {/* Buttons */}
   <div className="md:col-span-2 flex gap-3 mt-2">

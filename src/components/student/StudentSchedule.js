@@ -66,10 +66,10 @@ export default function StudentSchedule() {
             .map(res => res.json())
         );
 
-        // Flatten and filter for published timetables only
-        const allLectures = lectureArrays.flat().filter(lecture => 
-          lecture.timetable?.status === 'published'
-        );
+    const allLectures = lectureArrays.flat().filter(lecture => 
+  ['published', 'draft'].includes(lecture.timetable?.status)
+);
+
 
         setLectures(allLectures);
       } else {

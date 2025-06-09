@@ -8,6 +8,7 @@ import Lecture from '@/models/Lecture';
 import Timetable from '@/models/Timetable';
 import User from '@/models/User';
 import Venue from '@/models/Venue'; // Import Venue model for availability checks
+import Unit from '@/models/Unit';
 
 export async function POST(request) {
   try {

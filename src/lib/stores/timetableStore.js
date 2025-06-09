@@ -220,6 +220,34 @@ const useTimetableStore = create((set, get) => ({
       throw error;
     }
   },
+  updateTimetable: async (timetableId, updates) => {
+    set({ loading: true, error: null });
+    try {
+      const response = await fetch(`/api/timetables?id=${timetableId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(updates)
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to update timetable');
+      }
+
+      const updatedTimetable = await response.json();
+      set(state => ({
+        timetables: state.timetables.map(timetable =>
+          timetable._id === timetableId ? updatedTimetable : timetable
+        ),
+        loading: false
+      }));
+      return updatedTimetable;
+    } catch (error) {
+      set({ error: error.message, loading: false });
+      throw error;
+    }
+  },
 
   checkConflicts: async (lectureData) => {
     try {

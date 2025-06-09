@@ -1,11 +1,10 @@
+// src/app/api/teachers/attendance/route.js
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../auth/[...nextauth]/route';
 import connectDB from '@/lib/mongodb';
 import Lecture from '@/models/Lecture';
 import LectureInstance from '@/models/LectureInstance';
-import User from '@/models/User';
-import Unit from '@/models/Unit';
 
 export async function GET(request) {
   try {
@@ -16,12 +15,30 @@ export async function GET(request) {
 
     await connectDB();
 
-    // Find all lectures taught by the current teacher
-    const lectures = await Lecture.find({ teacher: session.user.id }).select('_id');
+    const { searchParams } = new URL(request.url);
+    const unitId = searchParams.get('unitId');
+    const startDate = searchParams.get('startDate');
+    const endDate = searchParams.get('endDate');
+
+    // Build the query to find lectures for the teacher
+    const lectureQuery = { teacher: session.user.id };
+    if (unitId) {
+      lectureQuery.unit = unitId;
+    }
+
+    const lectures = await Lecture.find(lectureQuery).select('_id');
     const lectureIds = lectures.map(l => l._id);
 
-    // Find all lecture instances for those lectures
-    const instances = await LectureInstance.find({ lecture: { $in: lectureIds } })
+    // Build the query for lecture instances
+    const instanceQuery = { lecture: { $in: lectureIds } };
+    if (startDate && endDate) {
+      instanceQuery.date = {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate),
+      };
+    }
+
+    const instances = await LectureInstance.find(instanceQuery)
       .populate({
         path: 'lecture',
         select: 'unit startTime endTime',
@@ -30,10 +47,11 @@ export async function GET(request) {
           select: 'name code'
         }
       })
-      .populate('attendance.student', 'name email')
+      // Populate more student details
+      .populate('attendance.student', 'name email regNumber phoneNumber')
       .sort({ date: -1 });
 
-    // Flatten the data to a list of attendance records
+    // Flatten the data
     const attendanceRecords = [];
     instances.forEach(instance => {
       instance.attendance.forEach(record => {

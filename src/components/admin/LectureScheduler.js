@@ -7,6 +7,7 @@ import timetableStore from '@/lib/stores/timetableStore';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import SearchableSelect from '@/components/SearchableSelect';
 import { FaPlus, FaEdit, FaTrash, FaClock, FaMapMarkerAlt, FaUser, FaVideo } from 'react-icons/fa';
+import toast from 'react-hot-toast';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const TIME_SLOTS = [
@@ -198,13 +199,18 @@ export default function LectureScheduler({ timetableId }) {
       };
 
       // Check for conflicts
-      const conflicts = await checkConflicts({
+      const conflictCheckPayload = {
         ...lecture,
-        ...updates
-      });
+        ...updates,
+        _id: lecture._id, 
+        unit: lecture.unit._id,
+        teacher: lecture.teacher._id,
+        timetable: timetableId
+      };
+      const conflicts = await checkConflicts(conflictCheckPayload);
 
       if (conflicts.teacher || conflicts.venue) {
-        alert('Conflict detected! ' + conflicts.details.map(c => c.message).join(', '));
+        toast.error('Conflict detected! ' + conflicts.details.map(c => c.message).join(', '));
         return;
       }
 
