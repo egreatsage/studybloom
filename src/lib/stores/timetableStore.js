@@ -249,7 +249,7 @@ const useTimetableStore = create((set, get) => ({
     }
   },
 
-  checkConflicts: async (lectureData) => {
+ checkConflicts: async (lectureData) => {
     try {
       const response = await fetch('/api/lectures/check-conflicts', {
         method: 'POST',
@@ -258,15 +258,27 @@ const useTimetableStore = create((set, get) => ({
         body: JSON.stringify(lectureData)
       });
 
+      // If the response is not OK, try to parse the JSON body for details.
       if (!response.ok) {
-        throw new Error('Failed to check conflicts');
+        // Check if the server sent a conflict error (status 400)
+        if (response.status === 400) {
+            const conflictDetails = await response.json();
+            // Return the detailed conflict object so the UI can use it
+            return conflictDetails; 
+        }
+        // For other errors (like 500), throw a generic error.
+        throw new Error(`Failed to check conflicts: ${response.statusText}`);
       }
 
-      const conflicts = await response.json();
-      return conflicts;
+      // If response is OK (200), there are no conflicts.
+      const noConflicts = await response.json();
+      return noConflicts;
+
     } catch (error) {
+      // This will now catch network errors or actual server failures.
       console.error('Conflict check error:', error);
-      return [];
+      // Re-throw the error to be handled by the component
+      throw error;
     }
   },
 

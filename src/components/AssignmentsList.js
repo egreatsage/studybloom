@@ -1,12 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { FaEdit, FaTrash, FaEye, FaLink } from 'react-icons/fa'; // Import FaLink
+import { FaEdit, FaTrash, FaEye, FaLink, FaFileAlt, FaClock, FaPlus, FaDownload } from 'react-icons/fa';
 import useAssignmentStore from '@/lib/stores/assignmentStore';
 import AssignmentDetails from './AssignmentDetails';
 import LoadingSpinner from './LoadingSpinner';
-
-
 
 const AssignmentsList = ({ unitId, isTeacher = false, onEdit, onDelete }) => {
   const { assignments, loading, error, fetchAssignments } = useAssignmentStore();
@@ -18,98 +16,192 @@ const AssignmentsList = ({ unitId, isTeacher = false, onEdit, onDelete }) => {
     }
   }, [unitId]);
   
-const createDownloadableLink = (url) => {
+  const createDownloadableLink = (url) => {
     if (!url) return '#';
     // Inserts 'fl_attachment/' after '/upload/' to force download
     return url.replace('/upload/', '/upload/fl_attachment/');
-};
+  };
+
+  const formatDueDate = (dueDate) => {
+    const date = new Date(dueDate);
+    const now = new Date();
+    const diffTime = date - now;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays < 0) {
+      return { text: `Overdue by ${Math.abs(diffDays)} day${Math.abs(diffDays) !== 1 ? 's' : ''}`, color: 'text-red-600', bg: 'bg-red-50 border-red-200' };
+    } else if (diffDays === 0) {
+      return { text: 'Due today', color: 'text-orange-600', bg: 'bg-orange-50 border-orange-200' };
+    } else if (diffDays <= 3) {
+      return { text: `Due in ${diffDays} day${diffDays !== 1 ? 's' : ''}`, color: 'text-yellow-600', bg: 'bg-yellow-50 border-yellow-200' };
+    } else {
+      return { text: `Due in ${diffDays} day${diffDays !== 1 ? 's' : ''}`, color: 'text-green-600', bg: 'bg-green-50 border-green-200' };
+    }
+  };
+
   if (loading) {
-    return <div className="flex justify-center p-4"><LoadingSpinner /></div>;
+    return (
+      <div className="flex flex-col items-center justify-center py-12">
+        <LoadingSpinner />
+        <p className="mt-4 text-gray-600">Loading assignments...</p>
+      </div>
+    );
   }
 
   if (error) {
     return (
-      <div className="p-4 bg-red-50 border border-red-200 rounded-md">
-        <p className="text-red-600">Error: {error}</p>
+      <div className="p-6 bg-gradient-to-r from-red-50 to-rose-50 border border-red-200 rounded-2xl shadow-lg">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-red-100 rounded-full">
+            <FaFileAlt className="w-5 h-5 text-red-600" />
+          </div>
+          <div>
+            <h3 className="font-semibold text-red-800">Error Loading Assignments</h3>
+            <p className="text-red-600 text-sm">{error}</p>
+          </div>
+        </div>
       </div>
     );
   }
 
   if (!assignments?.length) {
     return (
-      <div className="text-center py-8">
-        <p className="text-gray-500">No assignments found for this unit.</p>
-        {isTeacher && (
-          <button
-            onClick={() => onEdit(null)}
-            className="mt-4 text-blue-600 hover:text-blue-800"
-          >
-            Create the first assignment
-          </button>
-        )}
+      <div className="text-center py-16 bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl border border-gray-200">
+        <div className="max-w-md mx-auto">
+          <div className="mb-6">
+            <div className="mx-auto w-16 h-16 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-full flex items-center justify-center">
+              <FaFileAlt className="w-8 h-8 text-blue-600" />
+            </div>
+          </div>
+          <h3 className="text-xl font-semibold text-gray-800 mb-2">No Assignments Yet</h3>
+          <p className="text-gray-600 mb-6">No assignments have been created for this unit.</p>
+          {isTeacher && (
+            <button
+              onClick={() => onEdit(null)}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium rounded-xl hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl"
+            >
+              <FaPlus className="w-4 h-4" />
+              Create First Assignment
+            </button>
+          )}
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
-      {assignments.map((assignment) => (
-        <div
-          key={assignment._id}
-          className="border rounded-lg p-4 hover:shadow-md transition-shadow"
-        >
-          <div className="flex justify-between items-start">
-            <div>
-              <h3 className="text-lg font-semibold">{assignment.title}</h3>
-              <p className="text-gray-600 mt-1">{assignment.description}</p>
-              
-              {/* ADDED: Display link to assignment file */}
-              {assignment.fileUrl && (
-                <a
-                  href={createDownloadableLink(assignment.fileUrl)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                 className="text-sm text-blue-600 hover:underline mt-2 inline-flex items-center gap-1"
+    <div className="space-y-6">
+      {assignments.map((assignment, index) => {
+        const dueDateInfo = formatDueDate(assignment.dueDate);
+        
+        return (
+          <div
+            key={assignment._id}
+            className="group bg-white/80 backdrop-blur-sm border border-white/20 rounded-2xl p-6 hover:shadow-2xl hover:bg-white transition-all duration-300 transform hover:-translate-y-1"
+            style={{ animationDelay: `${index * 100}ms` }}
+          >
+            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+              {/* Assignment Content */}
+              <div className="flex-1 space-y-4">
+                {/* Title and Description */}
+                <div>
+                  <div className="flex items-start gap-3 mb-3">
+                    <div className="p-2 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg shadow-md">
+                      <FaFileAlt className="w-4 h-4 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-lg lg:text-xl font-semibold text-gray-800 mb-2 group-hover:text-blue-600 transition-colors">
+                        {assignment.title}
+                      </h3>
+                      <p className="text-gray-600 text-sm lg:text-base leading-relaxed">
+                        {assignment.description}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Assignment Details */}
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                  {/* Due Date Badge */}
+                  <div className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium ${dueDateInfo.bg} ${dueDateInfo.color}`}>
+                    <FaClock className="w-3 h-3" />
+                    <span>{dueDateInfo.text}</span>
+                  </div>
+
+                  {/* Full Date */}
+                  <div className="text-sm text-gray-500 flex items-center gap-2">
+                    <span>Due:</span>
+                    <span className="font-medium">
+                      {new Date(assignment.dueDate).toLocaleString('en-US', {
+                        weekday: 'short',
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </span>
+                  </div>
+                </div>
+
+                {/* File Attachment */}
+                {assignment.fileUrl && (
+                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4">
+                    <a
+                      href={createDownloadableLink(assignment.fileUrl)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-3 text-blue-700 hover:text-blue-800 font-medium group/link"
+                    >
+                      <div className="p-2 bg-blue-100 rounded-lg group-hover/link:bg-blue-200 transition-colors">
+                        <FaDownload className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium">Assignment Attachment</div>
+                        <div className="text-xs opacity-75">Click to download</div>
+                      </div>
+                      <FaLink className="w-3 h-3 opacity-50 group-hover/link:opacity-100 transition-opacity" />
+                    </a>
+                  </div>
+                )}
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex lg:flex-col gap-2 pt-2 lg:pt-0">
+                <button
+                  onClick={() => setSelectedAssignment(assignment)}
+                  className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transform hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg text-sm font-medium"
+                  title="View Details"
                 >
-                  <FaLink />
-                  View Attachment
-                </a>
-              )}
-              
-              <p className="text-sm text-gray-500 mt-2">
-                Due: {new Date(assignment.dueDate).toLocaleString()}
-              </p>
-            </div>
-            <div className="flex space-x-2">
-              <button
-                onClick={() => setSelectedAssignment(assignment)}
-                className="p-2 text-blue-600 hover:text-blue-800 transition-colors"
-                title="View Details"
-              >
-                <FaEye />
-              </button>
-              {isTeacher && (
-                <>
-                  <button
-                    onClick={() => onEdit(assignment)}
-                    className="p-2 text-green-600 hover:text-green-800 transition-colors"
-                    title="Edit Assignment"
-                  >
-                    <FaEdit />
-                  </button>
-                  <button
-                    onClick={() => onDelete(assignment._id)}
-                    className="p-2 text-red-600 hover:text-red-800 transition-colors"
-                    title="Delete Assignment"
-                  >
-                    <FaTrash />
-                  </button>
-                </>
-              )}
+                  <FaEye className="w-4 h-4" />
+                  <span className="hidden sm:inline">View/Grade</span>
+                </button>
+                
+                {isTeacher && (
+                  <>
+                    <button
+                      onClick={() => onEdit(assignment)}
+                      className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl hover:from-emerald-600 hover:to-emerald-700 transform hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg text-sm font-medium"
+                      title="Edit Assignment"
+                    >
+                      <FaEdit className="w-4 h-4" />
+                      <span className="hidden sm:inline">Edit</span>
+                    </button>
+                    <button
+                      onClick={() => onDelete(assignment._id)}
+                      className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl hover:from-red-600 hover:to-red-700 transform hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg text-sm font-medium"
+                      title="Delete Assignment"
+                    >
+                      <FaTrash className="w-4 h-4" />
+                      <span className="hidden sm:inline">Delete</span>
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
 
       {selectedAssignment && (
         <AssignmentDetails
