@@ -20,7 +20,7 @@ export async function GET(request, { params }) {
     }
 
     await connectDB();
-    const { id } = params;
+    const { id } = await params;
 
     const assignment = await Assignment.findById(id)
       .populate({

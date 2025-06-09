@@ -5,26 +5,38 @@ import useTeachingStore from '@/lib/stores/teachingStore';
 import useAssignmentStore from '@/lib/stores/assignmentStore';
 import { useSession } from 'next-auth/react';
 import { confirmDialog } from '@/lib/utils/confirmDialog';
-import { FaPlus, FaBookOpen, FaClipboardList, FaChalkboardTeacher, FaChevronRight } from 'react-icons/fa';
+import { FaPlus, FaBookOpen, FaClipboardList, FaChalkboardTeacher, FaChevronRight, FaEdit, FaTrash, FaChevronDown } from 'react-icons/fa';
 import AssignmentsList from '@/components/AssignmentsList';
 import AssignmentForm from '@/components/AssignmentForm';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import AssignmentSubmissions from '@/components/teacher/AssignmentSubmissions';
+// import { formatDate } from '@/lib/utils/errorHandler';
+
 
 export default function GradingCenterPage() {
   const { data: session } = useSession();
   const { assignments: teachingAssignments, fetchTeacherCourses, loading: teachingLoading } = useTeachingStore();
-  const { createAssignment, updateAssignment, deleteAssignment, loading: assignmentLoading } = useAssignmentStore();
+  const { createAssignment,fetchAssignments,assignments, updateAssignment, deleteAssignment, loading: assignmentLoading } = useAssignmentStore();
 
   const [selectedCourseId, setSelectedCourseId] = useState('');
   const [selectedUnitId, setSelectedUnitId] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAssignment, setEditingAssignment] = useState(null);
+  const [expandedAssignmentId, setExpandedAssignmentId] = useState(null);
+
+
+   useEffect(() => {
+    if (selectedUnitId) {
+      fetchAssignments(selectedUnitId);
+    }
+  }, [selectedUnitId, fetchAssignments]);
 
   useEffect(() => {
     if (session?.user?.id) {
       fetchTeacherCourses(session.user.id);
     }
   }, [session, fetchTeacherCourses]);
+
 
   const uniqueCourses = useMemo(() => {
     if (!teachingAssignments) return [];
@@ -51,6 +63,9 @@ export default function GradingCenterPage() {
     return Array.from(units.values());
   }, [selectedCourseId, teachingAssignments]);
 
+   const handleToggleSubmissions = (assignmentId) => {
+    setExpandedAssignmentId(prevId => (prevId === assignmentId ? null : assignmentId));
+  };
   const handleSubmitAssignment = async (data) => {
     const assignmentData = {
       ...data,
@@ -147,12 +162,32 @@ export default function GradingCenterPage() {
                   <FaPlus />
                 </button>
               </div>
-              <AssignmentsList
-                  unitId={selectedUnitId}
-                  isTeacher={true}
-                  onEdit={openModal}
-                  onDelete={handleDeleteAssignment}
-              />
+           <div className="space-y-4">
+                {assignmentLoading ? <LoadingSpinner/> : assignments.length === 0 ? (
+                  <p className="text-gray-500 text-center py-4">No assignments created for this unit yet.</p>
+                ) : (
+                  assignments.map(assignment => (
+                    <div key={assignment._id} className="border border-gray-200 rounded-lg">
+                      <div className="flex justify-between items-center p-4 cursor-pointer hover:bg-gray-50" onClick={() => handleToggleSubmissions(assignment._id)}>
+                        <div>
+                          <p className="font-semibold text-gray-800">{assignment.title}</p>
+                          {/* <p className="text-sm text-gray-500">Due: {formatDate(assignment.dueDate)}</p> */}
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <button onClick={(e) => { e.stopPropagation(); openModal(assignment); }} className="p-2 text-gray-500 hover:text-blue-600"><FaEdit/></button>
+                          <button onClick={(e) => { e.stopPropagation(); handleDeleteAssignment(assignment._id); }} className="p-2 text-gray-500 hover:text-red-600"><FaTrash/></button>
+                          <FaChevronDown className={`transition-transform ${expandedAssignmentId === assignment._id ? 'rotate-180' : ''}`} />
+                        </div>
+                      </div>
+                      {expandedAssignmentId === assignment._id && (
+                        <div className="p-4 bg-white">
+                          <AssignmentSubmissions assignmentId={assignment._id} />
+                        </div>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
             </div>
           ) : (
             <div className="text-center p-12 bg-white rounded-xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center h-full">

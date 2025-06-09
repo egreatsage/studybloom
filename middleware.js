@@ -197,18 +197,18 @@ export async function middleware(request) {
     }
 
     // Assignment-specific routes
-    if (pathname.match(/\/api\/assignments\/[^/]+/)) {
-      const assignmentId = pathname.split('/')[3];
-      // First get the unit ID from the assignment, then check unit access
-      const assignment = await Assignment.findById(assignmentId);
-      if (!assignment) {
-        return new NextResponse(
-          JSON.stringify({ message: 'Assignment not found' }),
-          { status: 404 }
-        );
-      }
-      return withUnitAccess(request, assignment.unit);
-    }
+    // if (pathname.match(/\/api\/assignments\/[^/]+/)) {
+    //   const assignmentId = pathname.split('/')[3];
+    //   // First get the unit ID from the assignment, then check unit access
+    //   const assignment = await Assignment.findById(assignmentId);
+    //   if (!assignment) {
+    //     return new NextResponse(
+    //       JSON.stringify({ message: 'Assignment not found' }),
+    //       { status: 404 }
+    //     );
+    //   }
+    //   return withUnitAccess(request, assignment.unit);
+    // }
 
     // Default to requiring authentication for all other API routes
     return withAuth(request);

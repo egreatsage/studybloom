@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../auth/[...nextauth]/route';
 import connectDB from '@/lib/mongodb';
 import Assignment from '@/models/Assignment';
+import Enrollment from '@/models/Enrollment';
 import { v2 as cloudinary } from 'cloudinary';
 
 cloudinary.config({
@@ -11,26 +12,30 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Helper function to upload a file buffer to Cloudinary
+// MODIFIED: This function now correctly handles the file object
 const bufferUpload = async (file) => {
-  return new Promise((resolve, reject) => {
-    const chunks = [];
-    file.stream().on('data', (chunk) => {
-      chunks.push(chunk);
-    });
-    file.stream().on('end', () => {
-      const buffer = Buffer.concat(chunks);
-      cloudinary.uploader.upload_stream(
-        { resource_type: "auto", folder: "submissions" },
-        (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
+  return new Promise(async (resolve, reject) => {
+    // Convert file to a buffer
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+
+    // Create an upload stream to Cloudinary
+    const uploadStream = cloudinary.uploader.upload_stream(
+      { resource_type: "auto", folder: "submissions" },
+      (error, result) => {
+        if (error) {
+          return reject(error);
         }
-      ).end(buffer);
-    });
-    file.stream().on('error', (error) => reject(error));
+        resolve(result);
+      }
+    );
+
+    // Write the buffer to the stream
+    uploadStream.end(buffer);
   });
 };
+
+export const runtime = 'nodejs';
 
 export async function POST(request, { params }) {
   try {
@@ -39,7 +44,8 @@ export async function POST(request, { params }) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id: assignmentId } = params;
+    // FIXED: Correctly access the assignment ID from params
+    const assignmentId = await  params.id;
     const formData = await request.formData();
     const files = formData.getAll('files');
     const comment = formData.get('comment');
@@ -54,15 +60,15 @@ export async function POST(request, { params }) {
       return NextResponse.json({ error: 'Assignment not found' }, { status: 404 });
     }
 
-    // Upload files to Cloudinary
+   
+
     const uploadedFiles = await Promise.all(
       files.map(async (file) => {
         const uploadResult = await bufferUpload(file);
         return { url: uploadResult.secure_url, name: file.name };
       })
     );
-
-    // Check if the student has already submitted
+    
     const existingSubmissionIndex = assignment.submissions.findIndex(
       (sub) => sub.student.toString() === session.user.id
     );
@@ -75,16 +81,13 @@ export async function POST(request, { params }) {
     };
 
     if (existingSubmissionIndex > -1) {
-      // Update existing submission if resubmitting
       assignment.submissions[existingSubmissionIndex] = newSubmission;
     } else {
-      // Add new submission
       assignment.submissions.push(newSubmission);
     }
 
     await assignment.save();
 
-    // Populate the assignment to return the full data
     const populatedAssignment = await Assignment.findById(assignment._id)
       .populate('submissions.student', 'name email');
 

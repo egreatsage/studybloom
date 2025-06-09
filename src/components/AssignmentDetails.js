@@ -9,7 +9,7 @@ import useAssignmentStore from '@/lib/stores/assignmentStore'; // Import the sto
 
 const AssignmentDetails = ({ assignment, onClose, isTeacher }) => {
   const [showSubmissionForm, setShowSubmissionForm] = useState(false);
-  const [showGradingInterface, setShowGradingInterface] = useState(false);
+  const [showGradingInterface, setShowGradingInterface] = useState(true);
   
   // Get the submitAssignment action and loading state from the store
   const { submitAssignment, loading } = useAssignmentStore();
@@ -32,13 +32,14 @@ const AssignmentDetails = ({ assignment, onClose, isTeacher }) => {
       <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6">
         <div className="flex justify-between items-start mb-4">
           <h2 className="text-2xl font-bold">{assignment.title}</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700" aria-label="Close">
-            ×
+          <h2 className="text-2xl font-bold">{assignment.description}</h2>
+          <button onClick={onClose} className="text-gray-500 font-bold hover:text-gray-700" aria-label="Close">
+            x
           </button>
         </div>
 
         <div className="space-y-4">
-          {/* ... (rest of the component content remains the same) ... */}
+         
           {!isTeacher && (
             <div>
               <button
