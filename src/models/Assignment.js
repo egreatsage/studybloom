@@ -1,3 +1,5 @@
+// src/models/Assignment.js
+
 import mongoose from 'mongoose';
 
 const { Schema, model, models } = mongoose;
@@ -12,6 +14,11 @@ const submissionSchema = new Schema({
     url: { type: String, required: true },
     name: { type: String, required: true },
   }],
+  // ADD THE COMMENT FIELD
+  comment: {
+    type: String,
+    trim: true,
+  },
   submittedAt: { 
     type: Date,
     default: Date.now
@@ -28,16 +35,19 @@ const submissionSchema = new Schema({
   },
   gradedBy: {
     type: Schema.Types.ObjectId,
-    ref: 'User'
+    ref: 'User',
+    default: null // MAKE THIS OPTIONAL
   },
   gradedAt: {
-    type: Date
+    type: Date,
+    default: null // MAKE THIS OPTIONAL
   }
 }, {
   timestamps: true
 });
 
 const assignmentSchema = new Schema({
+  //... (rest of the assignmentSchema remains the same)
   title: { 
     type: String, 
     required: true 

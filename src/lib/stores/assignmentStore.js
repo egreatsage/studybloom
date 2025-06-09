@@ -99,13 +99,13 @@ const useAssignmentStore = create((set, get) => ({
     }
   },
 
-  submitAssignment: async (assignmentId, submissionData) => {
+   submitAssignment: async (assignmentId, formData) => {
     set({ loading: true, error: null });
     try {
+      // The body is now formData, and the Content-Type header is set automatically.
       const response = await fetch(`/api/assignments/${assignmentId}/submit`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(submissionData),
+        body: formData, // Send formData directly
       });
       
       if (!response.ok) {
@@ -115,9 +115,11 @@ const useAssignmentStore = create((set, get) => ({
       
       const updatedAssignment = await response.json();
       set(state => ({
+        // Update the specific assignment in the list
         assignments: state.assignments.map(a => 
           a._id === assignmentId ? updatedAssignment : a
         ),
+        // Update the current assignment if it's the one being viewed
         currentAssignment: state.currentAssignment?._id === assignmentId 
           ? updatedAssignment 
           : state.currentAssignment

@@ -5,31 +5,28 @@ import { FaSpinner, FaDownload } from 'react-icons/fa';
 import useAssignmentStore from '@/lib/stores/assignmentStore';
 import { handleError, handleSuccess } from '@/lib/utils/errorHandler';
 
-const GradingInterface = ({ assignmentId, onClose }) => {
-  // FIX: Use `currentAssignment` and `fetchAssignment`
-  const { currentAssignment, loading, error, fetchAssignment, gradeSubmission } = useAssignmentStore();
+// 1. Change props from { assignmentId, ... } to { assignment, ... }
+const GradingInterface = ({ assignment, onClose }) => {
+  // 2. Remove the store hook and useEffect, as we no longer need to fetch.
+  const { gradeSubmission, fetchAssignment } = useAssignmentStore();
   const [selectedSubmissionId, setSelectedSubmissionId] = useState(null);
   const [grade, setGrade] = useState('');
   const [feedback, setFeedback] = useState('');
   const [isSubmittingGrade, setIsSubmittingGrade] = useState(false);
 
-  // Fetch the full assignment object when the component mounts
-  useEffect(() => {
-    if (assignmentId) {
-      fetchAssignment(assignmentId);
-    }
-  }, [assignmentId, fetchAssignment]);
+
 
   const handleGradeSubmit = async (submissionId) => {
     if (!grade || isNaN(parseFloat(grade))) {
       handleError(new Error('Please enter a valid grade'));
       return;
     }
-
     setIsSubmittingGrade(true);
     try {
-      // The store action will handle re-fetching the data
-      await gradeSubmission(assignmentId, submissionId, { grade: parseFloat(grade), feedback });
+      // 3. Use the assignment._id from the prop for the gradeSubmission call.
+      await gradeSubmission(assignment._id, submissionId, { grade: parseFloat(grade), feedback });
+      // After grading, refetch the assignment to update the view.
+      await fetchAssignment(assignment._id);
       setSelectedSubmissionId(null);
       setGrade('');
       setFeedback('');
@@ -41,25 +38,16 @@ const GradingInterface = ({ assignmentId, onClose }) => {
     }
   };
 
-  // Use the submissions from the fetched assignment
-  const submissions = currentAssignment?.submissions || [];
+  // 4. Use the submissions directly from the assignment prop.
+  const submissions = assignment?.submissions || [];
 
-  if (loading && !currentAssignment) {
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-8">
-        <div className="bg-white rounded-lg p-6">
-          <FaSpinner className="animate-spin h-8 w-8 text-blue-600 mx-auto" />
-          <p className="mt-2 text-center">Loading submissions...</p>
-        </div>
-      </div>
-    );
-  }
-  
+  // No need for a loading state here anymore.
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] flex flex-col">
         <div className="flex justify-between items-start p-6 border-b">
-          <h2 className="text-2xl font-bold">Grade Submissions for "{currentAssignment?.title}"</h2>
+          <h2 className="text-2xl font-bold">Grade Submissions for "{assignment?.title}"</h2>
           <button onClick={onClose} className="text-gray-500 hover:text-gray-700">✕</button>
         </div>
 

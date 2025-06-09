@@ -10,7 +10,8 @@ import {
   FaBars,
   FaTimes,
   FaSignOutAlt,
-  FaCalendarAlt
+  FaCalendarAlt,
+  FaGraduationCap
 } from 'react-icons/fa';
 
 const menuItems = [
@@ -18,6 +19,7 @@ const menuItems = [
   { path: '/teacher/schedule', icon: FaCalendarAlt, label: 'My Schedule' },
   { path: '/teacher/attendance', icon: FaClipboardList, label: 'Attendance' },
   { path: '/teacher/assignments', icon: FaClipboardList, label: 'Assignments' },
+   { path: '/teacher/grading', icon: FaGraduationCap, label: 'Grading Center' },
 ];
 
 export default function TeacherSidebar() {
