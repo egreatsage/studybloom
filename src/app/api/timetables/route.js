@@ -52,7 +52,7 @@ export async function GET(request) {
 
     // For students and teachers, only show published timetables
     if (session.user.role !== 'admin') {
-      query.status = 'published';
+      query.status = {$in :['published','draft']};
     }
 
     const timetables = await Timetable.find(query)
@@ -183,13 +183,13 @@ export async function PUT(request) {
       );
     }
 
-    // Only allow updates to draft timetables
-    if (timetable.status !== 'draft') {
-      return NextResponse.json(
-        { error: 'Can only update draft timetables' },
-        { status: 400 }
-      );
-    }
+    // // Only allow updates to draft timetables
+    // if (timetable.status !== 'draft') {
+    //   return NextResponse.json(
+    //     { error: 'Can only update draft timetables' },
+    //     { status: 400 }
+    //   );
+    // }
 
     // Update fields
     if (effectiveFrom) timetable.effectiveFrom = new Date(effectiveFrom);
@@ -244,7 +244,7 @@ export async function DELETE(request) {
     }
 
     // Only allow deletion of draft timetables
-win
+
 
     await timetable.deleteOne();
 

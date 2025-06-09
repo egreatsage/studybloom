@@ -77,7 +77,7 @@ export default function TimetableManager() {
     if (confirmed) {
       try {
         await deleteTimetable(id);
-        toast.success('Timetable deleted successfully');
+        toast.success('Timetable deleted successfully',{duration:2000});
       } catch (error) {
         console.error('Error deleting timetable:', error);
         if (error.message === 'Cannot delete timetable with associated lectures') {
@@ -358,12 +358,22 @@ export default function TimetableManager() {
                       </>
                     )}
                     {timetable.status === 'published' && (
-                      <button
-                        className="text-gray-400 cursor-not-allowed"
-                        title="Published timetables cannot be edited"
-                      >
-                        <FaArchive />
-                      </button>
+                      <>
+                       <button
+                          onClick={() => handleEdit(timetable)}
+                          className="text-indigo-600 hover:text-indigo-900"
+                          title="Edit"
+                        >
+                          <FaEdit />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(timetable._id)}
+                          className="text-red-600 hover:text-red-900"
+                          title="Delete"
+                        >
+                          <FaTrash />
+                        </button>
+                      </>
                     )}
                   </div>
                 </td>

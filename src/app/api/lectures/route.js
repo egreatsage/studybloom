@@ -265,12 +265,12 @@ export async function PUT(request) {
     }
 
     // Only allow updates to lectures in draft timetables
-    if (lecture.timetable.status !== 'draft') {
-      return NextResponse.json(
-        { error: 'Can only update lectures in draft timetables' },
-        { status: 400 }
-      );
-    }
+    // if (lecture.timetable.status !== 'draft') {
+    //   return NextResponse.json(
+    //     { error: 'Can only update lectures in draft timetables' },
+    //     { status: 400 }
+    //   );
+    // }
 
     // Update fields
     if (teacher) lecture.teacher = teacher;
@@ -367,12 +367,12 @@ export async function DELETE(request) {
     }
 
     // Only allow deletion from draft timetables
-    if (lecture.timetable.status !== 'draft') {
-      return NextResponse.json(
-        { error: 'Can only delete lectures from draft timetables' },
-        { status: 400 }
-      );
-    }
+    // if (lecture.timetable.status !== 'draft') {
+    //   return NextResponse.json(
+    //     { error: 'Can only delete lectures from draft timetables' },
+    //     { status: 400 }
+    //   );
+    // }
 
     // Check if there are any lecture instances
     const LectureInstance = (await import('@/models/LectureInstance')).default;
