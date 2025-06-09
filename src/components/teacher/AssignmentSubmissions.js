@@ -4,25 +4,17 @@ import { useState, useEffect } from 'react';
 import useAssignmentStore from '@/lib/stores/assignmentStore';
 import { FaDownload, FaSpinner } from 'react-icons/fa';
 import { formatDate } from '@/lib/utils/errorHandler';
-import LoadingSpinner from '../LoadingSpinner';
+import toast from 'react-hot-toast';
 
-const AssignmentSubmissions = ({ assignmentId }) => {
-  const { currentAssignment, fetchAssignment, gradeSubmission, loading } = useAssignmentStore();
-  const [submissions, setSubmissions] = useState([]);
+
+const AssignmentSubmissions = ({ assignment }) => {
+  const { gradeSubmission} = useAssignmentStore();
   const [gradingStates, setGradingStates] = useState({});
 
-  useEffect(() => {
-    if (assignmentId) {
-      fetchAssignment(assignmentId);
-    }
-  }, [assignmentId, fetchAssignment]);
-
-  useEffect(() => {
-    if (currentAssignment && currentAssignment._id === assignmentId) {
-      setSubmissions(currentAssignment.submissions);
-      // Initialize local state for grading inputs
+   useEffect(() => {
+    if (assignment?.submissions) {
       const initialStates = {};
-      currentAssignment.submissions.forEach(sub => {
+      assignment.submissions.forEach(sub => {
         initialStates[sub._id] = {
           grade: sub.grade || '',
           feedback: sub.feedback || '',
@@ -31,7 +23,8 @@ const AssignmentSubmissions = ({ assignmentId }) => {
       });
       setGradingStates(initialStates);
     }
-  }, [currentAssignment, assignmentId]);
+  }, [assignment]);
+ 
 
   const handleInputChange = (submissionId, field, value) => {
     setGradingStates(prev => ({
@@ -43,19 +36,17 @@ const AssignmentSubmissions = ({ assignmentId }) => {
   const handleGradeSubmit = async (submissionId) => {
     const { grade, feedback } = gradingStates[submissionId];
     if (grade === '' || isNaN(parseFloat(grade))) {
-        alert('Please enter a valid grade.');
+        toast.error('Please enter a valid grade.');
         return;
     }
     
     setGradingStates(prev => ({ ...prev, [submissionId]: { ...prev[submissionId], isSubmitting: true } }));
     
-    await gradeSubmission(assignmentId, submissionId, { grade: parseFloat(grade), feedback });
-
-    // No need to set isSubmitting to false, as the component will re-render with updated props from the store
+    await gradeSubmission(assignment._id, submissionId, { grade: parseFloat(grade), feedback });
   };
-
-  if (loading && !currentAssignment) {
-    return <LoadingSpinner />;
+    const submissions = assignment?.submissions || [];
+  if (submissions.length === 0) {
+    return <p className="text-gray-500 text-center py-4">No submissions yet for this assignment.</p>;
   }
 
   if (submissions.length === 0) {
