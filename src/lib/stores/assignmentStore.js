@@ -136,12 +136,14 @@ const useAssignmentStore = create((set, get) => ({
     }
   },
 
-  gradeSubmission: async (assignmentId, submissionId, gradeData) => {
+   gradeSubmission: async (assignmentId, submissionId, gradeData) => {
     set({ loading: true, error: null });
     try {
+      // 1. Correctly constructs the URL for the API endpoint we just created.
       const response = await fetch(`/api/assignments/${assignmentId}/submissions/${submissionId}/grade`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        // 2. Correctly sends the grade and feedback as a JSON payload.
         body: JSON.stringify(gradeData),
       });
       
@@ -151,6 +153,8 @@ const useAssignmentStore = create((set, get) => ({
       }
       
       const updatedAssignment = await response.json();
+
+      // 3. Correctly updates the state to ensure the UI refreshes everywhere.
       set(state => ({
         assignments: state.assignments.map(a => 
           a._id === assignmentId ? updatedAssignment : a
