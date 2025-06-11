@@ -4,7 +4,9 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]/route';
 import connectDB from '@/lib/mongodb';
 
-// ... (GET function remains the same)
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(request) {
   try {
     const session = await getServerSession(authOptions);
@@ -17,7 +19,8 @@ export async function GET(request) {
     const unitId = searchParams.get('unitId');
 
     await connectDB();
-
+    
+    
     let query = {};
     if (courseId) {
       query.course = courseId;
@@ -25,6 +28,19 @@ export async function GET(request) {
     if (unitId) {
       query.unit = unitId;
     }
+
+     if (session.user.role === 'student') {
+        const student = await User.findById(session.user.id).select('course');
+        if (student && student.course) {
+            query.course = student.course;
+        } else {
+            // If student has no course, they have no assignments
+            return NextResponse.json([]);
+        }
+    }
+    
+    if (courseId) query.course = courseId;
+    if (unitId) query.unit = unitId;
 
     const assignments = await Assignment.find(query)
       .populate('course', 'name code description')
