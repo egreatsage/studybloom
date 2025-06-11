@@ -1,76 +1,60 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
-import useEnrollmentStore from '@/lib/stores/enrollmentStore';
+import { useEffect, useState } from 'react';
 import useAssignmentStore from '@/lib/stores/assignmentStore';
 import { useSession } from 'next-auth/react';
 import LoadingSpinner from '@/components/LoadingSpinner';
-import StudentAssignmentItem from '@/components/student/StudentAssignmentItem'; // Import the new component
+import StudentAssignmentItem from '@/components/student/StudentAssignmentItem';
 
 export default function StudentAssignmentsPage() {
   const { data: session } = useSession();
-  const { courses, fetchEnrolledCourses, loading: coursesLoading } = useEnrollmentStore();
   const { assignments, fetchAssignments, submitAssignment, loading: assignmentsLoading } = useAssignmentStore();
-  const [selectedCourseId, setSelectedCourseId] = useState('');
 
+  // This simple useEffect fetches all relevant assignments for the logged-in student.
   useEffect(() => {
-    fetchEnrolledCourses();
-    // Fetch all assignments across all student's courses
     if (session?.user?.id) {
-        fetchAssignments({}); // Fetch all assignments for the student
+      // We call fetchAssignments() with NO arguments.
+      // The API now knows how to handle this for a student.
+      fetchAssignments();
     }
-  }, [fetchEnrolledCourses, fetchAssignments, session]);
-
-  const assignmentsForSelectedCourse = useMemo(() => {
-    if (!selectedCourseId) return [];
-    return assignments.filter(assignment => assignment.course === selectedCourseId);
-  }, [selectedCourseId, assignments]);
+  }, [session, fetchAssignments]);
 
   const handleSubmission = async (formData) => {
-    // This function will be passed down to the StudentAssignmentItem -> SubmissionForm
     const assignmentId = formData.get('assignmentId');
     await submitAssignment(assignmentId, formData);
   };
   
-  if (coursesLoading) return <LoadingSpinner />;
+  // We can get the course name from the first assignment in the list.
+  const courseName = assignments.length > 0 ? assignments[0].course.name : 'your course';
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">My Assignments</h1>
+      <h1 className="text-3xl font-bold text-gray-800 mb-2">My Assignments</h1>
+      <h2 className="text-xl text-gray-600 mb-6">For {courseName}</h2>
       
-      <div className="mb-6">
-        <label htmlFor="course-filter" className="block text-sm font-medium text-gray-700 mb-2">Filter by Course:</label>
-        <select
-            id="course-filter"
-            value={selectedCourseId}
-            onChange={(e) => setSelectedCourseId(e.target.value)}
-            className="w-full max-w-sm p-3 border rounded-lg"
-        >
-            <option value="">-- Select a Course to View Assignments --</option>
-            {courses.map(course => (
-                <option key={course._id} value={course._id}>{course.name} ({course.code})</option>
-            ))}
-        </select>
-      </div>
+      {/* The course filter dropdown is removed as it's no longer needed. */}
 
-      {selectedCourseId ? (
-        <div className="space-y-4">
-            {assignmentsLoading ? <LoadingSpinner/> : assignmentsForSelectedCourse.length === 0 ? (
-                <p className="text-center text-gray-500 py-8">No assignments for this course.</p>
-            ) : (
-                assignmentsForSelectedCourse.map(assignment => (
-                    <StudentAssignmentItem 
-                        key={assignment._id}
-                        assignment={assignment}
-                        studentId={session?.user?.id}
-                        onSubmission={handleSubmission}
-                    />
-                ))
-            )}
-        </div>
-      ) : (
-        <p className="text-center text-gray-500 py-8">Please select a course to see your assignments.</p>
-      )}
+      <div className="space-y-4">
+        {assignmentsLoading ? (
+          <div className="flex justify-center py-8">
+            <LoadingSpinner />
+          </div>
+        ) : assignments.length === 0 ? (
+          <div className="text-center p-8 bg-gray-50 rounded-lg">
+            <p className="text-gray-500">You have no assignments at the moment.</p>
+          </div>
+        ) : (
+          // The assignments are already filtered by the API, so we can map them directly.
+          assignments.map(assignment => (
+            <StudentAssignmentItem 
+              key={assignment._id}
+              assignment={assignment}
+              studentId={session?.user?.id}
+              onSubmission={handleSubmission}
+            />
+          ))
+        )}
+      </div>
     </div>
   );
 }

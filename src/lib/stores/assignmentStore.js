@@ -9,14 +9,21 @@ const useAssignmentStore = create((set, get) => ({
   loading: false,
   error: null,
 
-  fetchAssignments: async (unitId) => {
-    if (!unitId) {
-      return set({ assignments: [], loading: false });
-    }
+ fetchAssignments: async (unitId) => {
+    // This logic handles a call with no arguments, or a specific unitId
+    const isSpecificFetch = typeof unitId === 'string' && unitId;
+    
     set({ loading: true, error: null });
     try {
-      const response = await fetch(`/api/assignments?unitId=${unitId}`);
-      if (!response.ok) throw new Error('Failed to fetch assignments');
+      const url = isSpecificFetch
+        ? `/api/assignments?unitId=${unitId}`
+        : '/api/assignments'; // It should use this general URL for students
+
+      const response = await fetch(url);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to fetch assignments');
+      }
       const data = await response.json();
       set({ assignments: data, loading: false });
     } catch (error) {
@@ -24,7 +31,6 @@ const useAssignmentStore = create((set, get) => ({
       toast.error(error.message || 'Failed to fetch assignments');
     }
   },
-  
   createAssignment: async (assignmentData) => {
     try {
       const response = await fetch('/api/assignments', {
