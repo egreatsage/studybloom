@@ -52,6 +52,9 @@ export default function LoginPage() {
         case 'teacher':
           router.push('/teacher');
           break;
+        case 'parent':
+          router.push('/parent');
+          break;
         case 'student':
           router.push('/student');
           break;

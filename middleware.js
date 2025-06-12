@@ -172,6 +172,10 @@ export async function middleware(request) {
     return withAuth(request, ['student', 'admin']);
   }
 
+   if (pathname.startsWith('/parent')) {
+    return withAuth(request, ['teacher', 'admin','parent']);
+  }
+
   // API routes that require authentication
   if (pathname.startsWith('/api')) {
     // Course routes
