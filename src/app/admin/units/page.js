@@ -73,17 +73,11 @@ export default function UnitsPage() {
   };
 
   return (
-    <div className="p-6">
+    <div className="px-2">
       <ErrorBoundary>
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Units</h1>
-          <button
-            onClick={() => openModal()}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center space-x-2"
-          >
-            <FaPlus />
-            <span>Add Unit</span>
-          </button>
+          
         </div>
 
         {error && (
@@ -92,17 +86,22 @@ export default function UnitsPage() {
           </div>
         )}
 
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Search Units by Unit Name or Course Name
-          </label>
+        <div className="mb-6 flex justify-between items-center">
+         
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search units..."
+            placeholder="Search by name/code"
             className="w-52 rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
+          <button
+            onClick={() => openModal()}
+            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-blue-700 flex items-center space-x-2"
+          >
+            <FaPlus />
+            <span>Add </span>
+          </button>
         </div>
 
         <UnitsList

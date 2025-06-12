@@ -52,7 +52,7 @@ export default function SchoolsPage() {
 
   return (
     <ErrorBoundary>
-      <div className="p-6">
+      <div className="px-1">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Schools</h1>
           <button
@@ -60,7 +60,7 @@ export default function SchoolsPage() {
             className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center space-x-2"
           >
             <FaSchool />
-            <span>Add School</span>
+            <span>Add </span>
           </button>
         </div>
 

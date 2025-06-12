@@ -32,7 +32,7 @@ const UserTable = ({ users, loading, onEdit, onDelete }) => {
   });
 
   return (
-    <>
+    <div>
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 space-y-2 md:space-y-0 md:space-x-4">
         <div>
           <label htmlFor="roleFilter" className="mr-2 font-medium text-gray-700">Filter by Role:</label>
@@ -64,8 +64,8 @@ const UserTable = ({ users, loading, onEdit, onDelete }) => {
 
       <div className="overflow-x-auto shadow-md rounded-lg">
         <div className="inline-block min-w-full align-middle">
-          <div className="overflow-hidden">
-            <table className="min-w-full bg-white">
+          <div className="overflow-hidden ">
+            <table className="min-w-full bg-white overflow-x-scroll">
           <thead className="bg-gray-100">
             <tr>
               <th className="px-4 py-3 text-left">Photo</th>
@@ -142,7 +142,7 @@ const UserTable = ({ users, loading, onEdit, onDelete }) => {
       <div className="md:hidden text-center mt-2 text-xs text-gray-500">
         <p>← Swipe horizontally to see more →</p>
       </div>
-    </>
+    </div>
   );
 };
 

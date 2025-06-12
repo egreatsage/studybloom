@@ -69,20 +69,12 @@ export default function CoursesPage() {
   };
 
   return (
-    <div className="p-6">
+    <div className="px-1">
       <ErrorBoundary>
         <div className="mb-6">
           <div className="flex justify-between items-center mb-4">
             <h1 className="text-2xl font-bold">Course Management</h1>
-            {activeTab === 'courses' && (
-              <button
-                onClick={() => openModal()}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center space-x-2"
-              >
-                <FaPlus />
-                <span>Add Course</span>
-              </button>
-            )}
+          
           </div>
           
           <div className="flex space-x-4 mb-4">
@@ -111,7 +103,7 @@ export default function CoursesPage() {
         {activeTab === 'courses' ? (
           <>
             {/* Search input */}
-            <div className="mb-4">
+            <div className="mb-4 flex  justify-between items-center">
               <input
                 type="text"
                 placeholder="Search by name or code..."
@@ -119,6 +111,13 @@ export default function CoursesPage() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-52 p-2 border border-gray-300 rounded-md"
               />
+               <button
+                onClick={() => openModal()}
+                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-blue-700 flex items-center space-x-2"
+              >
+             
+                <span>Add</span>
+              </button>
             </div>
 
             {error && (

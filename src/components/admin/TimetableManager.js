@@ -131,11 +131,11 @@ export default function TimetableManager() {
 
   return (
     <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
+      <div className="md:flex md:justify-between md:items-center  mb-6">
         <h1 className="text-2xl font-bold">Timetable Management</h1>
         <button
           onClick={() => setShowForm(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
+          className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-end my-4 justify-end gap-2"
         >
           <FaPlus /> Create Timetable
         </button>
@@ -285,7 +285,7 @@ export default function TimetableManager() {
       )}
 
       {/* Timetables Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white rounded-lg shadow overflow-x-auto">
         <table className="min-w-full">
           <thead className="bg-gray-50">
             <tr>

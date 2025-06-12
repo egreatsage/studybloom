@@ -45,16 +45,16 @@ export default function UsersPage() {
   };
 
   return (
-    <div className="p-6">
+    <div>
       <ErrorBoundary>
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Users</h1>
           <button
             onClick={() => openModal()}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center space-x-2"
+            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-blue-700 flex items-center space-x-2"
           >
             <FaUserPlus />
-            <span>Add User</span>
+            <span>Add </span>
           </button>
         </div>
 

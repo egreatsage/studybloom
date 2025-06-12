@@ -31,9 +31,9 @@ export default function TeachingAssignmentsPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto md:px-4 px-1 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Teaching Assignments</h1>
+        <h1 className="md:text-3xl text-2xl font-bold text-gray-900">Teaching Assignments</h1>
         <p className="text-gray-600 mt-2">
           Manage teacher assignments to courses and units
         </p>

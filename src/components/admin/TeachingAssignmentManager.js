@@ -165,19 +165,19 @@ export default function TeachingAssignmentManager() {
           {error}
         </div>
       )}
-
-      <div className="mb-6 flex justify-between items-center">
-        <h2 className="text-xl font-bold">Current Assignments</h2>
-        <button
+     <button
           onClick={() => setShowForm(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
+          className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center justify-end gap-2"
         >
-          <FaPlus /> Add Assignment
+          <FaPlus /> Assign
         </button>
+      <div className="my-8">
+        <h2 className="text-xl font-bold">Current Assignments</h2>
+        
       </div>
 
       {/* Assignments List */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white rounded-lg shadow overflow-x-auto">
         <table className="min-w-full">
           <thead className="bg-gray-50">
             <tr>
@@ -253,7 +253,7 @@ export default function TeachingAssignmentManager() {
               {editingAssignment ? 'Edit Assignment' : 'Add New Assignment'}
             </h3>
             <form onSubmit={handleSubmit}>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-2">Teacher</label>
                   <SearchableSelect

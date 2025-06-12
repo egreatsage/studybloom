@@ -103,7 +103,7 @@ export default function TeacherSchedule() {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 ">
       {managingAttendance && (
           <AttendanceManager 
               lecture={managingAttendance.lecture}

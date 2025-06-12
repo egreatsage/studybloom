@@ -200,7 +200,7 @@ const UserForm = ({ onSubmit, loading, onClose, defaultValues }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit(internalOnSubmit)} className="space-y-6 max-h-[80vh] overflow-y-auto p-4">
+    <form onSubmit={handleSubmit(internalOnSubmit)} className="space-y-6 max-h-[80vh] overflow-y-scroll">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Photo Upload */}
         <div className="md:col-span-2 flex flex-col items-center space-y-2">
