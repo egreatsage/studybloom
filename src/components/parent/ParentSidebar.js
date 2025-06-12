@@ -4,10 +4,12 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
-import { FaUserGraduate, FaSignOutAlt, FaBars, FaTimes } from 'react-icons/fa';
+import { FaUserGraduate, FaSignOutAlt, FaBars, FaTimes, FaClipboardList, FaCalendarCheck } from 'react-icons/fa';
 
 const menuItems = [
   { path: '/parent', icon: FaUserGraduate, label: 'My Children' },
+  { path: '/parent/assignments', icon: FaClipboardList, label: 'Assignments' },
+  { path: '/parent/attendance', icon: FaCalendarCheck, label: 'Attendance' },
 ];
 
 export default function ParentSidebar() {

@@ -114,6 +114,7 @@ export default function StudentInfoCard ({ student }){
               <FaBook className="text-blue-600" />
               <h3 className="font-bold text-gray-800">Registered Units</h3>
             </div>
+             {student.registeredUnits.length > 0 ? (
             <div className="space-y-3 max-h-64 overflow-y-auto">
               {student.registeredUnits.map(unit => (
                 <div key={unit._id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
@@ -125,6 +126,11 @@ export default function StudentInfoCard ({ student }){
                 </div>
               ))}
             </div>
+             ) : (
+              <div className="p-3 bg-gray-50 rounded-xl text-center">
+                <p className="text-sm text-gray-500">No units registered.</p>
+              </div>
+             )}
           </div>
 
           {/* Attendance Details */}
