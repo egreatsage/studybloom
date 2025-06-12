@@ -3,11 +3,11 @@
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import { FaSpinner } from 'react-icons/fa';
+import { FaSpinner, FaSearch, FaTimes } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import useCourseStore from '@/lib/stores/courseStore';
 
-const roles = ['admin', 'teacher', 'student'];
+const roles = ['admin', 'teacher', 'student','parent'];
 
 const UserForm = ({ onSubmit, loading, onClose, defaultValues }) => {
   const { courses, fetchCourses } = useCourseStore();
@@ -33,6 +33,11 @@ const UserForm = ({ onSubmit, loading, onClose, defaultValues }) => {
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [courseSearch, setCourseSearch] = useState('');
   const [selectedCourse, setSelectedCourse] = useState(defaultValues?.course || null);
+  
+  // Parent-Student Linking States
+  const [allStudents, setAllStudents] = useState([]);
+  const [selectedChildren, setSelectedChildren] = useState([]);
+  const [studentSearch, setStudentSearch] = useState('');
 
   useEffect(() => {
     if (defaultValues?.photoUrl) {
@@ -46,7 +51,34 @@ const UserForm = ({ onSubmit, loading, onClose, defaultValues }) => {
         setCourseSearch(`${defaultValues.course.code} - ${defaultValues.course.name}`);
       }
     }
+    if (defaultValues?.role === 'parent' && defaultValues?.children) {
+      setSelectedChildren(defaultValues.children);
+    }
   }, [defaultValues]);
+
+  // Fetch students based on search input when role is parent
+  useEffect(() => {
+    const fetchStudents = async () => {
+      if (!studentSearch.trim()) {
+        setAllStudents([]);
+        return;
+      }
+      try {
+        const res = await fetch(`/api/users?role=student&search=${encodeURIComponent(studentSearch)}`);
+        if (res.ok) {
+          const data = await res.json();
+          setAllStudents(data);
+        }
+      } catch (e) {
+        toast.error('Could not load student list.');
+      }
+    };
+    if (watch('role') === 'parent') {
+      fetchStudents();
+    } else {
+      setAllStudents([]);
+    }
+  }, [studentSearch, watch('role')]);
 
   useEffect(() => {
     fetchCourses();
@@ -107,6 +139,22 @@ const UserForm = ({ onSubmit, loading, onClose, defaultValues }) => {
     }
   }, [defaultValues, reset]);
 
+  // Parent-Student Linking Handlers
+  const handleAddChild = (student) => {
+    if (!selectedChildren.find(child => child._id === student._id)) {
+      setSelectedChildren([...selectedChildren, student]);
+    }
+    setStudentSearch('');
+  };
+
+  const handleRemoveChild = (studentId) => {
+    setSelectedChildren(selectedChildren.filter(child => child._id !== studentId));
+  };
+  
+  const filteredAvailableStudents = allStudents.filter(student => 
+    !selectedChildren.some(child => child._id === student._id)
+  );
+
   const internalOnSubmit = (data) => {
     // Validate course selection for teachers and students
     if ((data.role === 'teacher' || data.role === 'student') && !selectedCourse) {
@@ -134,6 +182,11 @@ const UserForm = ({ onSubmit, loading, onClose, defaultValues }) => {
     // Add courseId if selected and role is teacher or student
     if ((data.role === 'teacher' || data.role === 'student') && selectedCourse) {
       formData.append('courseId', selectedCourse._id);
+    }
+
+    // Add children IDs if role is parent
+    if (data.role === 'parent') {
+      formData.append('childrenIds', selectedChildren.map(c => c._id).join(','));
     }
 
     // Debug log
@@ -333,6 +386,50 @@ const UserForm = ({ onSubmit, loading, onClose, defaultValues }) => {
             </div>
           )}
         </div>
+
+        {/* Parent-Student Linking UI */}
+        {watch('role') === 'parent' && (
+          <div className="md:col-span-2 p-4 border border-gray-200 rounded-lg">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Link Students to this Parent</label>
+            
+            {/* Display Selected Children */}
+            <div className="flex flex-wrap gap-2 mb-4">
+              {selectedChildren.map(child => (
+                <span key={child._id} className="flex items-center gap-2 bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">
+                  {child.name}
+                  <button type="button" onClick={() => handleRemoveChild(child._id)} className="text-blue-600 hover:text-blue-800">
+                    <FaTimes size={12}/>
+                  </button>
+                </span>
+              ))}
+            </div>
+
+            {/* Search and Select Input */}
+            <div className="relative">
+              <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                value={studentSearch}
+                onChange={(e) => setStudentSearch(e.target.value)}
+                placeholder="Search for students to add..."
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md"
+              />
+              {studentSearch && (
+                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-48 overflow-auto">
+                  {filteredAvailableStudents.map(student => (
+                    <div
+                      key={student._id}
+                      onClick={() => handleAddChild(student)}
+                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    >
+                      {student.name} ({student.email})
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="flex justify-end space-x-2 pt-4">

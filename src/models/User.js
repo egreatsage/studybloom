@@ -6,7 +6,7 @@ const { Schema, model, models } = mongoose;
 const userSchema = new Schema({
   role: {
     type: String,
-    enum: ['admin', 'teacher', 'student'],
+    enum: ['admin', 'teacher', 'student','parent'],
     required: true,
   },
   regNumber: {
@@ -16,6 +16,16 @@ const userSchema = new Schema({
     },
     unique: true,
     sparse: true
+  },
+  children: [{
+    type: Schema.Types.ObjectId,
+    ref: 'User'
+  }],
+  // Add a field to link students to their parent
+  parent: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    default: null
   },
   name: { 
     type: String, 
