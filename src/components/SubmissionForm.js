@@ -111,7 +111,6 @@ const SubmissionForm = ({ assignmentId, onClose, onSubmit }) => {
       files.forEach(file => formData.append('files', file));
 
       await onSubmit(formData);
-      handleSuccess('Assignment submitted successfully');
       onClose();
     } catch (error) {
       handleError(error, 'Failed to submit assignment');

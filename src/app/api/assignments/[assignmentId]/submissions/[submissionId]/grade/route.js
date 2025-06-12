@@ -3,7 +3,7 @@ import connectDB from '@/lib/mongodb';
 import Assignment from '@/models/Assignment';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-
+import User from '@/models/User';
 
 export async function POST(request, { params }) {
   try {
@@ -23,7 +23,7 @@ export async function POST(request, { params }) {
     const assignment = await Assignment.findById(assignmentId).populate({
         path: 'submissions.student',
         model: 'User',
-        select: 'name email photoUrl'
+        select: 'name email  photoUrl'
       });
 
     if (!assignment) {

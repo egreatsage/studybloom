@@ -3,7 +3,7 @@ import Assignment from '@/models/Assignment';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]/route';
 import connectDB from '@/lib/mongodb';
-
+import User from '@/models/User';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,14 +22,8 @@ export async function GET(request) {
     
     
     let query = {};
-    if (courseId) {
-      query.course = courseId;
-    }
-    if (unitId) {
-      query.unit = unitId;
-    }
-
-     if (session.user.role === 'student') {
+    
+    if (session.user.role === 'student') {
         const student = await User.findById(session.user.id).select('course');
         if (student && student.course) {
             query.course = student.course;
@@ -39,6 +33,7 @@ export async function GET(request) {
         }
     }
     
+    // Override course/unit if specifically requested
     if (courseId) query.course = courseId;
     if (unitId) query.unit = unitId;
 
@@ -47,6 +42,15 @@ export async function GET(request) {
       .populate('unit', 'name code')
       .populate('createdBy', 'name email')
       .populate('submissions.student', 'name email');
+
+    // Filter submissions if user is a student
+    if (session.user.role === 'student') {
+      assignments.forEach(assignment => {
+        assignment.submissions = assignment.submissions.filter(
+          submission => submission.student._id.toString() === session.user.id
+        );
+      });
+    }
 
     return NextResponse.json(assignments);
   } catch (error) {

@@ -31,7 +31,7 @@ export async function GET(request, { params }) {
       .populate({
         path: 'submissions.student',
         model: 'User',
-        select: 'name email photoUrl'
+        select: 'name email  photoUrl'
       });
 
     if (!assignment) {

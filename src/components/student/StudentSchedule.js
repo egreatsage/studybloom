@@ -331,43 +331,7 @@ export default function StudentSchedule() {
             
             <LectureCard lecture={selectedLecture} showDetails={true} />
             
-            <div className="mt-6 space-y-4">
-              <div>
-                <h3 className="font-semibold mb-2">Attendance Status</h3>
-                <p className="text-sm text-gray-600">
-                  Your attendance for this unit will be tracked during class.
-                </p>
-              </div>
-
-              <div>
-                <h3 className="font-semibold mb-2">Class Materials</h3>
-                <p className="text-sm text-gray-600">
-                  Materials will be available here once uploaded by the teacher.
-                </p>
-              </div>
-
-              <div className="flex gap-2 mt-6">
-                {selectedLecture.metadata?.isOnline && selectedLecture.metadata?.onlineLink && (
-                  <a
-                    href={selectedLecture.metadata.onlineLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-                  >
-                    Join Online Class
-                  </a>
-                )}
-                <button
-                  onClick={() => {
-                    // Handle add to personal calendar
-                    console.log('Add to calendar', selectedLecture._id);
-                  }}
-                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                >
-                  Add to Calendar
-                </button>
-              </div>
-            </div>
+         
           </div>
         </div>
       )}

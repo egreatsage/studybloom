@@ -9,31 +9,22 @@ cloudinary.config({
 
 // Helper to upload a file buffer to Cloudinary
 const bufferUpload = async (file) => {
+  const arrayBuffer = await file.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+
   return new Promise((resolve, reject) => {
-    const chunks = [];
-    file.stream().on('data', (chunk) => {
-      chunks.push(chunk);
-    });
-    file.stream().on('end', () => {
-      const buffer = Buffer.concat(chunks);
-      cloudinary.uploader.upload_stream(
-        {
-          // FIX: Use "auto" to let Cloudinary handle the file type
-          resource_type: "auto",
-          // FIX: Use a more appropriate folder for assignment files
-          folder: "assignments", 
-        },
-        (error, result) => {
-          if (error) {
-            return reject(error);
-          }
-          resolve(result);
+    cloudinary.uploader.upload_stream(
+      {
+        resource_type: "auto",
+        folder: "assignments",
+      },
+      (error, result) => {
+        if (error) {
+          return reject(error);
         }
-      ).end(buffer);
-    });
-    file.stream().on('error', (error) => {
-        reject(error);
-    });
+        resolve(result);
+      }
+    ).end(buffer);
   });
 };
 

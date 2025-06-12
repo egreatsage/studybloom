@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import useAssignmentStore from '@/lib/stores/assignmentStore';
 import { useSession } from 'next-auth/react';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -10,14 +10,18 @@ export default function StudentAssignmentsPage() {
   const { data: session } = useSession();
   const { assignments, fetchAssignments, submitAssignment, loading: assignmentsLoading } = useAssignmentStore();
 
+  const memoizedFetchAssignments = useCallback(() => {
+    fetchAssignments();
+  }, [fetchAssignments]);
+
   // This simple useEffect fetches all relevant assignments for the logged-in student.
   useEffect(() => {
     if (session?.user?.id) {
       // We call fetchAssignments() with NO arguments.
       // The API now knows how to handle this for a student.
-      fetchAssignments();
+      memoizedFetchAssignments();
     }
-  }, [session, fetchAssignments]);
+  }, [session?.user?.id, memoizedFetchAssignments]);
 
   const handleSubmission = async (formData) => {
     const assignmentId = formData.get('assignmentId');

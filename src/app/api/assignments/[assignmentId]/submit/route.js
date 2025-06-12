@@ -44,11 +44,16 @@ export async function POST(request, { params }) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // FIXED: Correctly access the assignment ID from params
-    const assignmentId = await  params.id;
+    const assignmentId = params.assignmentId;
     const formData = await request.formData();
     const files = formData.getAll('files');
     const comment = formData.get('comment');
+
+    console.log('Received submission request:', {
+      assignmentId,
+      filesCount: files.length,
+      comment: comment ? 'present' : 'not present'
+    });
 
     if (!files || files.length === 0) {
       return NextResponse.json({ error: 'No files provided for submission.' }, { status: 400 });

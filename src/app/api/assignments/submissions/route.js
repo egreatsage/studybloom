@@ -3,7 +3,7 @@ import Assignment from '@/models/Assignment';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../auth/[...nextauth]/route';
 import connectDB from '@/lib/mongodb';
-
+import User from '@/models/User';
 export async function POST(request) {
   try {
     const session = await getServerSession(authOptions);
@@ -146,7 +146,7 @@ export async function GET(request) {
     const assignment = await Assignment.findById(assignmentId)
       .populate('course', 'name code description')
       .populate('unit', 'name code')
-      .populate('submissions.student', 'name email')
+      .populate('submissions.student', 'name  email')
       .populate('submissions.gradedBy', 'name email');
 
     if (!assignment) {
