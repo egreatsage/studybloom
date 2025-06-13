@@ -29,9 +29,7 @@ export default function HomePage() {
     }
   }, [status, session, router]);
 
-  if (status === 'loading') {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>;
-  }
+
 
   if (status === 'authenticated') {
     return (

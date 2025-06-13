@@ -64,7 +64,7 @@ export default function CalendarView({ lectures = [], onDateClick, onLectureClic
         days.push(
           <div
             key={day}
-            className={`min-h-[100px] p-2 border border-gray-200 cursor-pointer hover:bg-gray-50 ${
+            className={`min-h-[80px] sm:min-h-[100px] p-1 sm:p-2 border border-gray-200 cursor-pointer hover:bg-gray-50 ${
               !isSameMonth(day, monthStart) ? 'bg-gray-50 text-gray-400' : ''
             } ${isSameDay(day, selectedDate) ? 'bg-blue-50' : ''}`}
             onClick={() => {
@@ -72,12 +72,12 @@ export default function CalendarView({ lectures = [], onDateClick, onLectureClic
               onDateClick?.(cloneDay);
             }}
           >
-            <div className="font-medium text-sm mb-1">{formattedDate}</div>
+            <div className="font-medium text-xs sm:text-sm mb-1">{formattedDate}</div>
             <div className="space-y-1">
               {dayLectures.slice(0, 3).map((lecture, idx) => (
                 <div
                   key={idx}
-                  className="text-xs p-1 rounded truncate cursor-pointer hover:opacity-80"
+                  className="text-[10px] sm:text-xs p-1 rounded truncate cursor-pointer hover:opacity-80"
                   style={{ backgroundColor: lecture.color || '#3B82F6', color: 'white' }}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -213,9 +213,9 @@ export default function CalendarView({ lectures = [], onDateClick, onLectureClic
   return (
     <div className="bg-white rounded-lg shadow">
       {/* Header */}
-      <div className="p-4 border-b border-gray-200">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
+      <div className="p-3 sm:p-4 border-b border-gray-200">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-3 sm:space-y-0 mb-4">
+          <div className="flex items-center gap-2 justify-between sm:justify-start w-full sm:w-auto">
             <button
               onClick={navigatePrevious}
               className="p-2 hover:bg-gray-100 rounded"
@@ -228,18 +228,18 @@ export default function CalendarView({ lectures = [], onDateClick, onLectureClic
             >
               <FaChevronRight />
             </button>
-            <h2 className="text-xl font-semibold ml-2">
+            <h2 className="text-lg sm:text-xl font-semibold ml-2 truncate">
               {format(currentDate, view === 'month' ? 'MMMM yyyy' : 'MMMM d, yyyy')}
             </h2>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
             <button
               onClick={() => setCurrentDate(new Date())}
-              className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+              className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 w-full sm:w-auto"
             >
               Today
             </button>
-            <div className="flex bg-gray-100 rounded">
+            <div className="flex bg-gray-100 rounded w-full sm:w-auto justify-center">
               <button
                 onClick={() => setView('month')}
                 className={`px-3 py-1 text-sm rounded ${
@@ -270,20 +270,27 @@ export default function CalendarView({ lectures = [], onDateClick, onLectureClic
 
         {/* Day headers for month view */}
         {view === 'month' && (
-          <div className="grid grid-cols-7 text-center text-sm font-medium text-gray-600">
-            <div>Sun</div>
-            <div>Mon</div>
-            <div>Tue</div>
-            <div>Wed</div>
-            <div>Thu</div>
-            <div>Fri</div>
-            <div>Sat</div>
+          <div className="grid grid-cols-7 text-center text-xs sm:text-sm font-medium text-gray-600">
+            <div className="hidden sm:block">Sunday</div>
+            <div className="hidden sm:block">Monday</div>
+            <div className="hidden sm:block">Tuesday</div>
+            <div className="hidden sm:block">Wednesday</div>
+            <div className="hidden sm:block">Thursday</div>
+            <div className="hidden sm:block">Friday</div>
+            <div className="hidden sm:block">Saturday</div>
+            <div className="sm:hidden">Sun</div>
+            <div className="sm:hidden">Mon</div>
+            <div className="sm:hidden">Tue</div>
+            <div className="sm:hidden">Wed</div>
+            <div className="sm:hidden">Thu</div>
+            <div className="sm:hidden">Fri</div>
+            <div className="sm:hidden">Sat</div>
           </div>
         )}
       </div>
 
       {/* Calendar body */}
-      <div className="p-4">
+      <div className="p-2 sm:p-4">
         {view === 'month' && renderMonthView()}
         {view === 'week' && renderWeekView()}
         {view === 'day' && renderDayView()}

@@ -123,11 +123,9 @@ const StudentDashboard = () => {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h2 className="text-2xl sm:text-3xl font-bold mb-2">
-                  Welcome back, {session?.user?.name?.split(' ')[0] || 'Student'}! 👋
+                  Welcome back, {session?.user?.name?.split(' ')[0] || 'Student'}! 
                 </h2>
-                <p className="text-blue-100 text-sm sm:text-base">
-                  Ready to continue your learning journey today?
-                </p>
+                
               </div>
               <div className="mt-4 sm:mt-0">
                 <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3">

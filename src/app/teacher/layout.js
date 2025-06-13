@@ -32,7 +32,7 @@ export default function TeacherLayout({ children }) {
   return (
     <div className="min-h-screen overflow-x-hidden bg-gray-50 flex">
       <TeacherSidebar />
-      <main className="flex-1 p-6">{children}</main>
+      <main className="flex-1 p-1 py-12 sm:p-1 md:p-6 overflow-x-hidden">{children}</main>
     </div>
   );
 }

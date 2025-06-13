@@ -84,11 +84,11 @@ const SemesterInfo = () => {
           <div className="flex items-center space-x-2">
             <FaClock />
             <p className="font-medium">
-              {currentSemester.daysRemaining} days remaining
+              {currentSemester.daysRemaining} days remaining for the semester to end
             </p>
           </div>
           <p className="text-sm mt-1 opacity-90">
-            Registration is open during the semester period
+            
           </p>
         </div>
 

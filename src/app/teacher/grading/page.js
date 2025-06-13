@@ -5,7 +5,8 @@ import useTeachingStore from '@/lib/stores/teachingStore';
 import useAssignmentStore from '@/lib/stores/assignmentStore';
 import { useSession } from 'next-auth/react';
 import { confirmDialog } from '@/lib/utils/confirmDialog';
-import { FaPlus, FaBookOpen, FaClipboardList, FaChalkboardTeacher, FaChevronRight, FaEdit, FaTrash, FaChevronDown, FaGraduationCap, FaTasks, FaUsers } from 'react-icons/fa';
+import { FaPlus, FaBookOpen, FaClipboardList, FaChalkboardTeacher, FaChevronRight, FaEdit, FaTrash, FaChevronDown, FaGraduationCap, FaTasks, FaUsers, FaClock } from 'react-icons/fa';
+import { format, parseISO } from 'date-fns';
 import AssignmentsList from '@/components/AssignmentsList';
 import AssignmentForm from '@/components/AssignmentForm';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -106,12 +107,12 @@ export default function GradingCenterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-100">
       {/* Header Section */}
       <div className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
+            <div className="flex items-center space-x-4 w-full sm:w-auto">
               <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
                 <FaChalkboardTeacher className="text-2xl text-white" />
               </div>
@@ -138,11 +139,11 @@ export default function GradingCenterPage() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <div className="bg-white w-full mx-auto px-1 md:px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar - Course and Unit Selection */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-6 sticky top-8">
+          <div className="lg:w-1/4">
+            <div className="bg-white rounded-xl md:rounded-2xl shadow-xl border border-gray-200 p-6 sticky top-8">
               <div className="space-y-6">
                 {/* Course Selection */}
                 <div className="space-y-3">
@@ -194,11 +195,11 @@ export default function GradingCenterPage() {
           </div>
 
           {/* Main Content - Assignments */}
-          <div className="lg:col-span-3">
+          <div className="lg:w-3/4">
             {selectedUnitId ? (
               <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
                 {/* Header */}
-                <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-5 border-b border-gray-200">
+                <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-2 py-5 border-b border-gray-200">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
                       <h2 className="text-xl font-bold text-gray-900">
@@ -217,7 +218,7 @@ export default function GradingCenterPage() {
                 </div>
 
                 {/* Assignments List */}
-                <div className="p-6">
+                <div className=" px-1 py-3 sm:p-4 md:p-6">
                   {assignmentLoading ? (
                     <div className="flex justify-center items-center py-12">
                       <LoadingSpinner />
@@ -243,20 +244,23 @@ export default function GradingCenterPage() {
                         <div key={assignment._id} className="border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-shadow duration-200">
                           {/* Assignment Header */}
                           <div 
-                            className="flex items-center justify-between p-5 cursor-pointer hover:bg-gray-50 transition-colors duration-200"
+                            className="flex items-center justify-between p-3 sm:p-4 cursor-pointer hover:bg-gray-50 transition-colors duration-200"
                             onClick={() => handleToggleSubmissions(assignment._id)}
                           >
-                            <div className="flex-1">
-                              <h3 className="font-semibold text-gray-900 text-lg">{assignment.title}</h3>
-                              <div className="flex items-center space-x-4 mt-2 text-sm text-gray-600">
-                                <span className="flex items-center">
+                            <div className="flex-1 min-w-0 pr-4">
+                              <h3 className="font-semibold text-gray-900 text-lg truncate">{assignment.title}</h3>
+                              <div className="flex  items-center space-x-4 mt-2 text-sm text-gray-600 truncate">
+                                <span className="flex mt-3 items-center">
                                   <FaUsers className="mr-1" />
                                   {assignment.submissions?.length || 0} submissions
                                 </span>
-                                {/* <span>Due: {formatDate(assignment.dueDate)}</span> */}
+                                <span className="flex items-center mt-3">
+                                  <FaClock className="mr-1" />
+                                  Due: {assignment.dueDate ? format(parseISO(assignment.dueDate), 'MMM d, yyyy') : 'No due date'}
+                                </span>
                               </div>
                             </div>
-                            <div className="flex items-center space-x-2">
+                            <div className="flex items-center space-x-2 flex-shrink-0">
                               <button 
                                 onClick={(e) => { e.stopPropagation(); openModal(assignment); }} 
                                 className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"

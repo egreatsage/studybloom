@@ -174,7 +174,7 @@ const AssignmentSubmissions = ({ assignment }) => {
             )}
 
             {/* Grading Section */}
-            <div className="bg-gray-50 rounded-xl p-4" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-gray-50 rounded-xl md:p-4" onClick={(e) => e.stopPropagation()}>
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 {/* Feedback */}
                 <div className="lg:col-span-2">
@@ -252,7 +252,7 @@ const AssignmentSubmissions = ({ assignment }) => {
   }
 
   return (
-    <div className="p-6">
+    <div className="md:p-6 px-2 py-6">
       {/* Summary Stats */}
       <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl p-6 mb-6">
         <div className="flex items-center justify-between">
@@ -261,18 +261,19 @@ const AssignmentSubmissions = ({ assignment }) => {
               <FaGraduationCap className="mr-2" />
               Assignment Submissions
             </h4>
-            <div className="flex space-x-6 text-sm">
+            <div className="md:flex md:space-x-6 text-sm grid grid-cols-2">
               <div>Total: {ungradedTotal + gradedTotal}</div>
               <div>Graded: {gradedTotal}</div>
               <div>Pending: {ungradedTotal}</div>
-            </div>
-          </div>
-          <div className="text-right">
-            <div className="text-2xl font-bold">
+               <div className="flex gap-2">
+            <div className="text-md text-green-3 font-bold">
               {ungradedTotal + gradedTotal > 0 ? Math.round((gradedTotal / (ungradedTotal + gradedTotal)) * 100) : 0}%
             </div>
-            <div className="text-sm opacity-90">Complete</div>
+            <div className="text-sm opacity-90">Graded</div>
           </div>
+            </div>
+          </div>
+         
         </div>
       </div>
 

@@ -26,16 +26,16 @@ const menuItems = [
   { path: '/admin/departments', icon: FaBuilding, label: 'Departments' },
   { path: '/admin/courses', icon: FaGraduationCap, label: 'Courses' },
   { path: '/admin/units', icon: FaUniversity, label: 'Units' },
-  { path: '/admin/teaching-assignments', icon: FaChalkboardTeacher, label: 'Teaching Assignments' },
+  // Removed teaching-assignments from sidebar menu
   { path: '/admin/timetables', icon: FaCalendarAlt, label: 'Timetables' },
   { path: '/admin/venues', icon: FaMapMarkerAlt, label: 'Venues' },
 ];
 
 export default function AdminSidebar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
   const pathname = usePathname();
   const { data: session } = useSession();
+  const [isExpanded, setIsExpanded] = useState(true);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -58,9 +58,8 @@ export default function AdminSidebar() {
       {/* Sidebar */}
       <div
         className={`fixed top-0 left-0 h-full bg-white shadow-lg transition-all duration-300 ease-in-out z-40 overflow-y-auto
-          ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
-          ${isExpanded ? 'w-64' : 'w-20'}
-          lg:translate-x-0 lg:static`}
+          ${isMobileMenuOpen ? 'translate-x-0 w-64' : '-translate-x-full'}
+          lg:translate-x-0 lg:static ${isExpanded ? 'lg:w-64' : 'lg:w-20'}`}
       >
         {/* Toggle Button (Desktop) */}
         <button
@@ -71,9 +70,9 @@ export default function AdminSidebar() {
         </button>
 
         {/* Logo/Header */}
-        <div className={`p-6 border-b ${!isExpanded && 'flex justify-center'}`}>
-          {isExpanded ? (
-            <>
+        <div className="p-6 border-b lg:flex lg:flex-col">
+          <div className="flex items-center justify-between">
+            <div className={`flex-1 ${!isExpanded ? 'lg:hidden' : ''}`}>
               <h1 className="text-xl font-bold text-slate-800">StudyBloom Admin</h1>
               {session?.user && (
                 <div className="mt-2 text-sm">
@@ -81,10 +80,11 @@ export default function AdminSidebar() {
                   <p className="text-slate-500 capitalize">{session.user.role}</p>
                 </div>
               )}
-            </>
-          ) : (
-            <FaCog className="text-2xl text-slate-600" />
-          )}
+            </div>
+            <div className={`hidden lg:block ${isExpanded ? 'lg:hidden' : ''}`}>
+              <FaCog className="text-2xl text-slate-600" />
+            </div>
+          </div>
         </div>
 
         {/* Navigation */}
@@ -98,7 +98,8 @@ export default function AdminSidebar() {
                 <li key={item.path}>
                   <Link
                     href={item.path}
-                    className={`group flex items-center ${isExpanded ? 'space-x-3' : 'justify-center'} p-3 rounded-lg transition-colors relative
+                    className={`group flex items-center space-x-3 p-3 rounded-lg transition-colors relative
+                      ${!isExpanded && 'lg:justify-center lg:space-x-0'}
                       ${isActive 
                         ? 'bg-slate-50 text-slate-800' 
                         : 'text-gray-700 hover:bg-slate-50'
@@ -106,9 +107,9 @@ export default function AdminSidebar() {
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     <Icon className={`text-xl ${isActive ? 'text-slate-800' : 'text-gray-400'}`} />
-                    {isExpanded && <span className="font-medium">{item.label}</span>}
+                    <span className={`font-medium ${!isExpanded && 'lg:hidden'}`}>{item.label}</span>
                     
-                    {/* Tooltip */}
+                    {/* Tooltip - Only show on desktop when collapsed */}
                     {!isExpanded && (
                       <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-sm rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-50">
                         {item.label}
@@ -122,15 +123,16 @@ export default function AdminSidebar() {
         </nav>
 
         {/* Sign Out Button */}
-        <div className={`p-4 mt-auto border-t ${!isExpanded && 'flex justify-center'}`}>
+        <div className="p-4 mt-auto border-t">
           <button
             onClick={() => signOut({ callbackUrl: '/login' })}
-            className={`group flex items-center ${isExpanded ? 'space-x-3 w-full' : 'justify-center'} p-3 rounded-lg text-red-600 hover:bg-red-50 transition-colors relative`}
+            className={`group flex items-center space-x-3 w-full p-3 rounded-lg text-red-600 hover:bg-red-50 transition-colors relative
+              ${!isExpanded && 'lg:justify-center lg:space-x-0'}`}
           >
             <FaSignOutAlt className="text-xl" />
-            {isExpanded && <span className="font-medium">Sign Out</span>}
+            <span className={`font-medium ${!isExpanded && 'lg:hidden'}`}>Sign Out</span>
             
-            {/* Tooltip for Sign Out */}
+            {/* Tooltip for Sign Out - Only show on desktop when collapsed */}
             {!isExpanded && (
               <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-sm rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap">
                 Sign Out

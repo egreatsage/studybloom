@@ -170,7 +170,7 @@ const useAssignmentStore = create((set, get) => ({
           : state.currentAssignment
       }));
       
-      toast.success('Submission graded successfully', { duration: 3000 });
+      toast.success('Submission graded successfully', { duration: 2000 });
       return updatedAssignment;
     } catch (error) {
       set({ error: error.message, loading: false });
