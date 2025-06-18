@@ -74,6 +74,37 @@ const useUnitStore = create((set, get) => ({
     }
   },
 
+  // Create multiple units
+  createBulkUnits: async (bulkData) => {
+    set({ loading: true, error: null });
+    try {
+      const response = await fetch('/api/units/bulk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(bulkData),
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to create units');
+      }
+      
+      const newUnits = await response.json();
+      set(state => ({
+        units: [...state.units, ...newUnits]
+      }));
+      
+      toast.success('Units created successfully', { duration: 3000 });
+      return newUnits;
+    } catch (error) {
+      set({ error: error.message });
+      toast.error(error.message || 'Failed to create units', { duration: 3000 });
+      throw error;
+    } finally {
+      set({ loading: false });
+    }
+  },
+
   // Update a unit
   updateUnit: async (unitId, updateData) => {
     set({ loading: true, error: null });

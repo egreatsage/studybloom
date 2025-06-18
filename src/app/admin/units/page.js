@@ -9,6 +9,7 @@ import useUnitStore from '@/lib/stores/unitStore';
 import useCourseStore from '@/lib/stores/courseStore';
 import UnitsList from '@/components/UnitsList';
 import UnitForm from '@/components/UnitForm';
+import BulkUnitForm from '@/components/BulkUnitForm';
 
 export default function UnitsPage() {
   const {
@@ -23,6 +24,7 @@ export default function UnitsPage() {
 
   const { courses, fetchCourses } = useCourseStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
   const [selectedUnit, setSelectedUnit] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -95,13 +97,22 @@ export default function UnitsPage() {
             placeholder="Search by name/code"
             className="w-52 rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
-          <button
-            onClick={() => openModal()}
-            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-blue-700 flex items-center space-x-2"
-          >
-            <FaPlus />
-            <span>Add </span>
-          </button>
+          <div className="flex space-x-2">
+            <button
+              onClick={() => openModal()}
+              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-blue-700 flex items-center space-x-2"
+            >
+              <FaPlus />
+              <span>Add Unit</span>
+            </button>
+            <button
+              onClick={() => setIsBulkModalOpen(true)}
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center space-x-2"
+            >
+              <FaPlus />
+              <span>Bulk Add</span>
+            </button>
+          </div>
         </div>
 
         <UnitsList
@@ -114,6 +125,39 @@ export default function UnitsPage() {
         />
 
         <AnimatePresence>
+          {/* Bulk Add Modal */}
+          {isBulkModalOpen && (
+            <motion.div
+              className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <motion.div
+                className="bg-white rounded-lg shadow-xl p-6 m-4 max-w-4xl w-full"
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.8, opacity: 0 }}
+              >
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-bold">Bulk Add Units</h2>
+                </div>
+
+                <BulkUnitForm
+                  onSubmit={async (data) => {
+                    try {
+                      await useUnitStore.getState().createBulkUnits(data);
+                      setIsBulkModalOpen(false);
+                    } catch (error) {
+                      console.error('Failed to create units:', error);
+                    }
+                  }}
+                  onClose={() => setIsBulkModalOpen(false)}
+                  loading={loading}
+                />
+              </motion.div>
+            </motion.div>
+          )}
           {isModalOpen && (
             <motion.div
               className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"

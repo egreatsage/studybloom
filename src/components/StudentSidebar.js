@@ -20,7 +20,6 @@ const menuItems = [
   { path: '/student', icon: FaBook, label: 'Dashboard' },
   { path: '/student/schedule', icon: FaCalendarAlt, label: 'My Schedule' },
   { path: '/student/assignments', icon: FaClipboardList, label: 'Assignments' },
-  { path: '/student/grades', icon: FaGraduationCap, label: 'Grades' },
 ];
 
 export default function StudentSidebar() {
