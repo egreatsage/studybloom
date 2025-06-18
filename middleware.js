@@ -112,6 +112,9 @@ async function withUnitAccess(request, unitId) {
     if (token.role === 'admin') {
       return NextResponse.next();
     }
+     if (token.role === 'parent') {
+          return NextResponse.next();
+        }
 
     // Get the unit to check its course
     const unit = await Unit.findById(unitId).populate('course');

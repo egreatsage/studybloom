@@ -5,6 +5,8 @@ import connectDB from '@/lib/mongodb';
 import LectureInstance from '@/models/LectureInstance';
 import UnitRegistration from '@/models/UnitRegistration';
 import Lecture from '@/models/Lecture';
+import Unit from '@/models/Unit';
+
 
 export async function GET(request) {
     try {

@@ -13,11 +13,13 @@ import {
   FaCalendarAlt,
   FaGraduationCap,
   FaChevronLeft,
-  FaChevronRight
+  FaChevronRight,
+  FaBell
 } from 'react-icons/fa';
 
 const menuItems = [
   { path: '/teacher', icon: FaChalkboardTeacher, label: 'Dashboard' },
+  { path: '/teacher/my-notifications', icon: FaBell, label: 'Notifications' },
   { path: '/teacher/schedule', icon: FaCalendarAlt, label: 'My Schedule' },
   { path: '/teacher/attendance', icon: FaClipboardList, label: 'Attendance' },
   { path: '/teacher/assignments', icon: FaClipboardList, label: 'Assignments' },
