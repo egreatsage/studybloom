@@ -77,6 +77,9 @@ async function withCourseAccess(request, courseId) {
     if (token.role === 'admin') {
       return NextResponse.next();
     }
+    if (token.role === 'parent') {
+          return NextResponse.next();
+      }
 
     // Check if user has access to the course
     const hasAccess = await checkCourseAccess(token.id, courseId, token.role);
@@ -114,7 +117,7 @@ async function withUnitAccess(request, unitId) {
     }
      if (token.role === 'parent') {
           return NextResponse.next();
-        }
+      }
 
     // Get the unit to check its course
     const unit = await Unit.findById(unitId).populate('course');
@@ -172,7 +175,7 @@ export async function middleware(request) {
 
   // Student routes
   if (pathname.startsWith('/student')) {
-    return withAuth(request, ['student', 'admin']);
+    return withAuth(request, ['student', 'admin','parent']);
   }
 
    if (pathname.startsWith('/parent')) {

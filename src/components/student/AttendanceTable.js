@@ -53,7 +53,7 @@ export default function AttendanceTable({ records }) {
             {filteredRecords.map(record => (
               <tr key={record._id}>
                 <td className="px-4 sm:px-6 py-4 whitespace-nowrap">{new Date(record.date).toLocaleDateString()}</td>
-                <td className="px-4 sm:px-6 py-4 whitespace-nowrap">{record.unit.name} ({record.unit.code})</td>
+                <td className="px-4 sm:px-6 py-4 whitespace-nowrap">{record.unit?.name ?? 'N/A'} ({record.unit?.code ?? 'N/A'})</td>
                 <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
                   <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadge(record.status)}`}>
                     {record.status.charAt(0).toUpperCase() + record.status.slice(1)}

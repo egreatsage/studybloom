@@ -7,7 +7,6 @@ import { useSession } from 'next-auth/react';
 import { confirmDialog } from '@/lib/utils/confirmDialog';
 import { FaPlus, FaBookOpen, FaClipboardList, FaChalkboardTeacher, FaChevronRight, FaEdit, FaTrash, FaChevronDown, FaGraduationCap, FaTasks, FaUsers, FaClock } from 'react-icons/fa';
 import { format, parseISO } from 'date-fns';
-import AssignmentsList from '@/components/AssignmentsList';
 import AssignmentForm from '@/components/AssignmentForm';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import AssignmentSubmissions from '@/components/teacher/AssignmentSubmissions';

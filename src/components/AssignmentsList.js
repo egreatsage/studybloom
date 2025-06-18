@@ -5,6 +5,7 @@ import { FaEdit, FaTrash, FaEye, FaLink, FaFileAlt, FaClock, FaPlus, FaDownload 
 import useAssignmentStore from '@/lib/stores/assignmentStore';
 import AssignmentDetails from './AssignmentDetails';
 import LoadingSpinner from './LoadingSpinner';
+import Link from 'next/link';
 
 const AssignmentsList = ({ unitId, isTeacher = false, onEdit, onDelete }) => {
   const { assignments, loading, error, fetchAssignments } = useAssignmentStore();
@@ -113,9 +114,7 @@ const AssignmentsList = ({ unitId, isTeacher = false, onEdit, onDelete }) => {
                       <h3 className="text-lg lg:text-xl font-semibold text-gray-800 mb-2 group-hover:text-blue-600 transition-colors">
                         {assignment.title}
                       </h3>
-                      <p className="text-gray-600 text-sm lg:text-base leading-relaxed">
-                        {assignment.description}
-                      </p>
+                   
                     </div>
                   </div>
                 </div>
@@ -144,59 +143,14 @@ const AssignmentsList = ({ unitId, isTeacher = false, onEdit, onDelete }) => {
                   </div>
                 </div>
 
-                {/* File Attachment */}
-                {assignment.fileUrl && (
-                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4">
-                    <a
-                      href={createDownloadableLink(assignment.fileUrl)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-3 text-blue-700 hover:text-blue-800 font-medium group/link"
-                    >
-                      <div className="p-2 bg-blue-100 rounded-lg group-hover/link:bg-blue-200 transition-colors">
-                        <FaDownload className="w-4 h-4" />
-                      </div>
-                      <div>
-                        <div className="text-sm font-medium">Assignment Attachment</div>
-                        <div className="text-xs opacity-75">Click to download</div>
-                      </div>
-                      <FaLink className="w-3 h-3 opacity-50 group-hover/link:opacity-100 transition-opacity" />
-                    </a>
-                  </div>
-                )}
+             
               </div>
 
               {/* Action Buttons */}
               <div className="flex lg:flex-col gap-2 pt-2 lg:pt-0">
-                <button
-                  onClick={() => setSelectedAssignment(assignment)}
-                  className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transform hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg text-sm font-medium"
-                  title="View Details"
-                >
-                  <FaEye className="w-4 h-4" />
-                  <span className="hidden sm:inline">View/Grade</span>
-                </button>
-                
-                {isTeacher && (
-                  <>
-                    <button
-                      onClick={() => onEdit(assignment)}
-                      className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl hover:from-emerald-600 hover:to-emerald-700 transform hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg text-sm font-medium"
-                      title="Edit Assignment"
-                    >
-                      <FaEdit className="w-4 h-4" />
-                      <span className="hidden sm:inline">Edit</span>
-                    </button>
-                    <button
-                      onClick={() => onDelete(assignment._id)}
-                      className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl hover:from-red-600 hover:to-red-700 transform hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg text-sm font-medium"
-                      title="Delete Assignment"
-                    >
-                      <FaTrash className="w-4 h-4" />
-                      <span className="hidden sm:inline">Delete</span>
-                    </button>
-                  </>
-                )}
+              <Link className='px-3 py-2 outline outline-amber-300 rounded-lg text-gray-700' href={"/student/assignments"}>
+              View Assigment
+              </Link>
               </div>
             </div>
           </div>
