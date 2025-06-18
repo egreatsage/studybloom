@@ -13,13 +13,15 @@ import {
   FaSignOutAlt,
   FaCalendarAlt,
   FaChevronLeft,
-  FaChevronRight
+  FaChevronRight,
+  FaCalendarCheck
 } from 'react-icons/fa';
 
 const menuItems = [
   { path: '/student', icon: FaBook, label: 'Dashboard' },
   { path: '/student/schedule', icon: FaCalendarAlt, label: 'My Schedule' },
   { path: '/student/assignments', icon: FaClipboardList, label: 'Assignments' },
+  { path: '/student/attendance', icon: FaCalendarCheck, label: 'Attendance' },
 ];
 
 export default function StudentSidebar() {
