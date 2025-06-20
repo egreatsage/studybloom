@@ -67,7 +67,7 @@ const AssignmentForm = ({ onSubmit, loading, onClose, defaultValues, unitId }) =
       const data = await res.json();
       setFileUrl(data.imageUrl);
       setFileName(file.name);
-      toast.success('File uploaded!', { id: toastId });
+      toast.success('File uploaded!', { id: toastId },{duration: 2000});
     } catch (error) {
         handleError(error, 'Upload failed. Please try again.');
         event.target.value = ''; // Reset file input

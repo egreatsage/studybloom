@@ -42,7 +42,7 @@ const useAssignmentStore = create((set, get) => ({
         const errorData = await response.json();
         throw new Error(errorData.message || 'Failed to create assignment');
       }
-      toast.success('Assignment created successfully');
+      toast.success('Assignment created successfully',{ duration: 3000 });
       // Re-fetch the assignments for the relevant unit
       get().fetchAssignments(assignmentData.unitId);
     } catch (error) {

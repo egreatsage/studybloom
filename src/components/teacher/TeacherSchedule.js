@@ -8,7 +8,7 @@ import CalendarView from '@/components/timetable/CalendarView';
 import LectureCard from '@/components/timetable/LectureCard';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import AttendanceManager from '@/components/teacher/AttendanceManager';
-import { FaCalendarAlt, FaList, FaDownload, FaFilter, FaRegCalendarCheck } from 'react-icons/fa';
+import { FaCalendarAlt, FaList, FaRegCalendarCheck } from 'react-icons/fa';
 
 export default function TeacherSchedule() {
   const { data: session } = useSession();
@@ -85,10 +85,6 @@ export default function TeacherSchedule() {
     }
   };
 
-  const handleExportSchedule = async (format = 'ical') => {
-    // implementation
-  };
-
   const filteredLectures = lectures.filter(lecture => {
     if (filter.semester !== 'all' && lecture.timetable?.semester?._id !== filter.semester) return false;
     if (filter.course !== 'all' && lecture.timetable?.course?._id !== filter.course) return false;
@@ -96,8 +92,6 @@ export default function TeacherSchedule() {
     return true;
   });
 
-  const uniqueSemesters = [...new Set(lectures.map(l => l.timetable?.semester?._id))].filter(Boolean);
-  const uniqueCourses = [...new Set(lectures.map(l => l.timetable?.course?._id))].filter(Boolean);
   const uniqueUnits = [...new Set(lectures.map(l => l.unit._id))];
 
 
@@ -146,31 +140,9 @@ export default function TeacherSchedule() {
 
           {/* Filters */}
           <div className="grid grid-cols-1 gap-3 sm:flex sm:flex-row sm:space-x-4 w-full sm:w-auto">
-            <select
-              value={filter.semester}
-              onChange={(e) => setFilter({ ...filter, semester: e.target.value })}
-              className="border border-gray-300 rounded px-3 py-2 w-full sm:w-auto text-sm"
-            >
-              <option value="all">All Semesters</option>
-              {uniqueSemesters.map(semesterId => (
-                <option key={semesterId} value={semesterId}>
-                  {lectures.find(l => l.timetable?.semester?._id === semesterId)?.timetable?.semester?.name || semesterId}
-                </option>
-              ))}
-            </select>
+            
 
-            <select
-              value={filter.course}
-              onChange={(e) => setFilter({ ...filter, course: e.target.value })}
-              className="border border-gray-300 rounded px-3 py-2 w-full sm:w-auto text-sm"
-            >
-              <option value="all">All Courses</option>
-              {uniqueCourses.map(courseId => (
-                <option key={courseId} value={courseId}>
-                  {lectures.find(l => l.timetable?.course?._id === courseId)?.timetable?.course?.name || courseId}
-                </option>
-              ))}
-            </select>
+           
 
             <select
               value={filter.unit}
@@ -256,15 +228,7 @@ export default function TeacherSchedule() {
                 >
                   <FaRegCalendarCheck /> Manage Attendance
                 </button>
-                <button
-                  onClick={() => {
-                    // Handle upload materials
-                    console.log('Upload materials for', selectedLecture._id);
-                  }}
-                  className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 w-full sm:w-auto text-center"
-                >
-                  Upload Materials
-                </button>
+                
               </div>
             </div>
           </div>

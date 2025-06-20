@@ -89,55 +89,96 @@ export default function TeacherAssignmentsPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">Assignment Management</h1>
-      
+      {/* Header Section */}
+      <div className="bg-white border-b border-gray-200 shadow-sm mb-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
+            <div className="flex items-center space-x-4 w-full sm:w-auto">
+              <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+                <FaBookOpen className="text-2xl text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">Assignment Management</h1>
+                <p className="text-gray-600 mt-1">Manage assignments and grade student submissions</p>
+              </div>
+            </div>
+            
+            {/* Stats Cards */}
+            <div className="hidden lg:flex space-x-4">
+              <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-4 text-white min-w-[120px] text-center">
+                <FaBookOpen className="text-2xl mx-auto mb-2" />
+                <p className="text-2xl font-bold">{uniqueCourses.length}</p>
+                <p className="text-sm opacity-90">Courses</p>
+              </div>
+              <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-4 text-white min-w-[120px] text-center">
+                <FaClipboardList className="text-2xl mx-auto mb-2" />
+                <p className="text-2xl font-bold">{teachingAssignments.length}</p>
+                <p className="text-sm opacity-90">Assignments</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-1">
-          <div className="bg-white p-6 rounded-xl shadow-lg space-y-6">
-            <div>
-              <h2 className="text-lg font-semibold text-gray-700 mb-2 flex items-center"><FaBookOpen className="mr-2"/> Select Course</h2>
-              <select 
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                onChange={(e) => {
-                  setSelectedCourseId(e.target.value);
-                  setSelectedUnitId('');
-                }}
-                value={selectedCourseId}
-              >
-                <option value="">-- Select a Course --</option>
-                {uniqueCourses.map(course => (
-                  <option key={course._id} value={course._id}>{course.name}</option>
-                ))}
-              </select>
-            </div>
-            {selectedCourseId && (
+          <div className="bg-white rounded-xl md:rounded-2xl shadow-xl border border-gray-200 p-6 sticky top-8">
+            <div className="space-y-6">
               <div>
-                <h2 className="text-lg font-semibold text-gray-700 mb-2 flex items-center"><FaClipboardList className="mr-2"/> Select Unit</h2>
+                <h2 className="text-lg font-semibold text-gray-800 mb-2 flex items-center"><FaBookOpen className="mr-2"/> Select Course</h2>
                 <select 
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  onChange={(e) => setSelectedUnitId(e.target.value)}
-                  value={selectedUnitId}
+                  className="w-full p-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white"
+                  onChange={(e) => {
+                    setSelectedCourseId(e.target.value);
+                    setSelectedUnitId('');
+                  }}
+                  value={selectedCourseId}
                 >
-                  <option value="">-- Select a Unit --</option>
-                  {unitsForSelectedCourse.map(unit => (
-                    <option key={unit._id} value={unit._id}>{unit.name}</option>
+                  <option value="">Choose a course...</option>
+                  {uniqueCourses.map(course => (
+                    <option key={course._id} value={course._id}>{course.name}</option>
                   ))}
                 </select>
               </div>
-            )}
+              {selectedCourseId && (
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-800 mb-2 flex items-center"><FaClipboardList className="mr-2"/> Select Unit</h2>
+                  <select 
+                    className="w-full p-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white disabled:opacity-50"
+                    onChange={(e) => setSelectedUnitId(e.target.value)}
+                    value={selectedUnitId}
+                    disabled={unitsForSelectedCourse.length === 0}
+                  >
+                    <option value="">Choose a unit...</option>
+                    {unitsForSelectedCourse.map(unit => (
+                      <option key={unit._id} value={unit._id}>{unit.name}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
         <div className="lg:col-span-2">
           {selectedUnitId ? (
-            <div className="bg-white p-6 rounded-xl shadow-lg">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold text-gray-800">
-                  Assignments for {unitsForSelectedCourse.find(u => u._id === selectedUnitId)?.name}
-                </h2>
-                <button onClick={() => openModal()} className="bg-blue-600 text-white p-3 rounded-full hover:bg-blue-700 shadow-sm">
-                  <FaPlus />
-                </button>
+            <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+              <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-2 py-5 border-b border-gray-200">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-900">
+                      Assignments for {unitsForSelectedCourse.find(u => u._id === selectedUnitId)?.name}
+                    </h2>
+                    <p className="text-gray-600 text-sm mt-1">Manage assignments and submissions</p>
+                  </div>
+                  <button 
+                    onClick={() => openModal()} 
+                    className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold rounded-xl hover:from-indigo-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                  >
+                    <FaPlus className="mr-2" />
+                    New Assignment
+                  </button>
+                </div>
               </div>
               <AssignmentsList
                   unitId={selectedUnitId}
@@ -147,17 +188,20 @@ export default function TeacherAssignmentsPage() {
               />
             </div>
           ) : (
-            <div className="text-center p-12 bg-gray-50 rounded-xl border-2 border-dashed">
-              <p className="text-gray-500 font-medium">Please select a course and unit to view assignments.</p>
+            <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-12 text-center">
+              <div className="w-32 h-32 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <FaBookOpen className="text-4xl text-indigo-400" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">Select Course & Unit</h3>
+              <p className="text-gray-600 text-lg">Choose a course and unit from the sidebar to view and manage assignments</p>
             </div>
           )}
         </div>
       </div>
 
       {isModalOpen && (
-        <div className="fixed  overflow-y-auto inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-4xl">
-            <h2 className="text-xl font-bold mb-4">{editingAssignment ? 'Edit Assignment' : 'Create Assignment'}</h2>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto">
             <AssignmentForm
               onSubmit={handleSubmitAssignment}
               onClose={closeModal}

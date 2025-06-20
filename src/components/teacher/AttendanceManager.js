@@ -90,7 +90,7 @@ const AttendanceManager = ({ lecture, lectureInstance, onClose }) => {
         throw new Error('Failed to save attendance');
       }
 
-      toast.success('Attendance saved successfully!');
+      toast.success('Attendance saved successfully!',{duration: 2000});
       onClose();
     } catch (error) {
       toast.error(error.message);
