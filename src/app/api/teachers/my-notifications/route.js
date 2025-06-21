@@ -48,16 +48,12 @@ export async function PUT(request) {
       );
     }
 
-    await connectToDatabase();
+    await connectDB();
 
-    const notification = await TeacherNotification.findOneAndUpdate(
-      { 
-        _id: notificationId,
-        teacher: session.user.id
-      },
-      { read: true },
-      { new: true }
-    );
+    const notification = await TeacherNotification.findOne({ 
+      _id: notificationId,
+      teacher: session.user.id
+    });
 
     if (!notification) {
       return NextResponse.json(
@@ -65,6 +61,10 @@ export async function PUT(request) {
         { status: 404 }
       );
     }
+
+    // Toggle the read status
+    notification.read = !notification.read;
+    await notification.save();
 
     return NextResponse.json(notification);
 

@@ -4,6 +4,8 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]/route';
 import connectDB from '@/lib/mongodb';
 import User from '@/models/User';
+import Course from '@/models/Course';
+
 
 export const dynamic = 'force-dynamic';
 

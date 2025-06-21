@@ -4,57 +4,57 @@ import { useEffect, useState } from 'react';
 import { FaBell, FaEnvelope, FaCheckCircle, FaClock, FaUser, FaBook, FaReply, FaFilter, FaSearch } from 'react-icons/fa';
 
 export default function TeacherNotifications() {
-  const [notifications, setNotifications] = useState([
-    // Mock data for demonstration
-    {
-      _id: '1',
-      subject: 'Question about Assignment 3',
-      studentName: 'Sarah Johnson',
-      studentEmail: 'sarah.johnson@email.com',
-      unitName: 'Mathematics 101',
-      message: 'Hi Professor, I\'m having trouble understanding the quadratic equations in Assignment 3. Could you please explain the discriminant method? I\'ve been working on it for hours but still can\'t get the right answers.',
-      createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
-      read: false
-    },
-    {
-      _id: '2',
-      subject: 'Grade Inquiry - Midterm Exam',
-      studentName: 'Michael Chen',
-      studentEmail: 'michael.chen@email.com',
-      unitName: 'Physics 201',
-      message: 'Dear Professor, I received my midterm exam grade and I believe there might be an error in the calculation. Could we schedule a meeting to review my answers?',
-      createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000),
-      read: true
-    },
-    {
-      _id: '3',
-      subject: 'Request for Extension',
-      studentName: 'Emma Rodriguez',
-      studentEmail: 'emma.rodriguez@email.com',
-      unitName: 'Chemistry 301',
-      message: 'Hello Professor, I am writing to request a 2-day extension for the lab report due tomorrow. I have been dealing with a family emergency and haven\'t been able to complete the analysis section.',
-      createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
-      read: false
-    }
-  ]);
+  const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRead, setFilterRead] = useState('all');
 
   useEffect(() => {
-    // Simulate API call
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
+    const fetchNotifications = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/teachers/my-notifications');
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch notifications');
+        }
+
+        const data = await response.json();
+        setNotifications(data.map(notification => ({
+          ...notification,
+          createdAt: new Date(notification.createdAt)
+        })));
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNotifications();
   }, []);
 
   const markAsRead = async (notificationId) => {
     try {
+      const response = await fetch('/api/teachers/my-notifications', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ notificationId }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to mark notification as read');
+      }
+
+      const updatedNotification = await response.json();
+      
       setNotifications(notifications.map(notification => 
         notification._id === notificationId 
-          ? { ...notification, read: true }
+          ? { ...updatedNotification, createdAt: new Date(updatedNotification.createdAt) }
           : notification
       ));
     } catch (error) {
@@ -244,19 +244,19 @@ export default function TeacherNotifications() {
                           <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
                             <FaUser className="text-blue-600 text-xs" />
                           </div>
-                          <span className="font-medium truncate">{notification.studentName}</span>
+                          <span className="font-medium flex items-center truncate"><h1 className='text-md mr-2 text-black'>Name:</h1> {notification.studentName}</span>
                         </div>
                         <div className="flex items-center gap-3 text-sm text-gray-600 bg-gray-50/50 rounded-lg p-3">
                           <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
                             <FaEnvelope className="text-purple-600 text-xs" />
                           </div>
-                          <span className="truncate">{notification.studentEmail}</span>
+                          <span className="truncate flex items-center"><h1 className='text-md mr-2 text-black'>Email:</h1> {notification.studentEmail}</span>
                         </div>
                         <div className="flex items-center gap-3 text-sm text-gray-600 bg-gray-50/50 rounded-lg p-3 sm:col-span-2 lg:col-span-1">
                           <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
                             <FaBook className="text-green-600 text-xs" />
                           </div>
-                          <span className="font-medium truncate">{notification.unitName}</span>
+                          <span className="font-medium flex items-center truncate"> <h1 className='text-md mr-2 text-black'>Unit:</h1>{notification.unitName}</span>
                         </div>
                       </div>
 
@@ -270,20 +270,18 @@ export default function TeacherNotifications() {
                       {/* Action buttons */}
                       <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
                         <div className="flex items-center gap-2">
-                          {notification.read ? (
-                            <span className="flex items-center gap-2 text-sm text-gray-500 bg-gray-100 px-3 py-2 rounded-lg">
-                              <FaCheckCircle className="text-green-500" />
-                              Read
-                            </span>
-                          ) : (
-                            <button
-                              onClick={() => markAsRead(notification._id)}
-                              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-sm font-medium rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-200 transform hover:scale-105 shadow-lg"
-                            >
-                              <FaCheckCircle />
-                              Mark as Read
-                            </button>
-                          )}
+                          <button
+                            onClick={() => markAsRead(notification._id)}
+                            
+                            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200 transform shadow-lg ${
+                              notification.read 
+                                ? 'bg-gray-100 text-gray-500 cursor-not-allowed opacity-75'
+                                : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 hover:scale-105'
+                            }`}
+                          >
+                            <FaCheckCircle className={notification.read ? 'text-green-500' : 'text-white'} />
+                            Read
+                          </button>
                         </div>
                         <a
                           href={`mailto:${notification.studentEmail}?subject=Re: ${notification.subject}`}

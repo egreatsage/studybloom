@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import Link from 'next/link';
 
 const AttendanceSummary = () => {
   const { data: session } = useSession();
@@ -42,7 +43,12 @@ const AttendanceSummary = () => {
 
   return (
     <div className="bg-white p-6 rounded-lg shadow">
-      <h2 className="text-xl font-bold mb-4">Attendance Summary</h2>
+      < div className='flex justify-between items-center mb-4'>
+      <h1>Attendance Summary</h1>
+      <Link className='border border-gray-300 px-2 py-2 rounded-md hover:bg-indigo-100' href="/student/attendance">
+      View full Attendance
+      </Link>
+      </div>
       <div className="space-y-4">
         {/* Overall Summary */}
         <div>
