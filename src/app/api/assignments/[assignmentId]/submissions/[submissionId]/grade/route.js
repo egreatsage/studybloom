@@ -13,35 +13,49 @@ export async function POST(request, { params }) {
     }
 
     await connectDB();
-    const { assignmentId, submissionId } = params;
+    const { assignmentId, submissionId } = await params;
     const { grade, feedback } = await request.json();
 
-    if (grade === undefined || grade === null) {
-      return NextResponse.json({ error: 'Grade is required' }, { status: 400 });
+    const parsedGrade = parseFloat(grade);
+    if (isNaN(parsedGrade)) {
+        return NextResponse.json({ error: 'Invalid grade format.' }, { status: 400 });
     }
 
-    const assignment = await Assignment.findById(assignmentId).populate({
-        path: 'submissions.student',
-        model: 'User',
-        select: 'name email  photoUrl'
-      });
+    const assignment = await Assignment.findById(assignmentId);
 
     if (!assignment) {
       return NextResponse.json({ error: 'Assignment not found' }, { status: 404 });
     }
+
+    // --- NEW VALIDATION LOGIC ---
+    if (parsedGrade > assignment.maxScore) {
+      return NextResponse.json(
+        { error: `Grade (${parsedGrade}) cannot exceed the maximum score of ${assignment.maxScore}.` },
+        { status: 400 }
+      );
+    }
+    // --- END NEW VALIDATION LOGIC ---
 
     const submission = assignment.submissions.id(submissionId);
     if (!submission) {
       return NextResponse.json({ error: 'Submission not found' }, { status: 404 });
     }
 
-    submission.grade = grade;
+    submission.grade = parsedGrade;
     submission.feedback = feedback || '';
     submission.gradedAt = new Date();
+    submission.gradedBy = session.user.id;
 
     await assignment.save();
+    
+    // Repopulate after saving
+    const updatedAssignment = await Assignment.findById(assignmentId).populate({
+        path: 'submissions.student',
+        model: 'User',
+        select: 'name email photoUrl'
+    });
 
-    return NextResponse.json(assignment);
+    return NextResponse.json(updatedAssignment);
   } catch (error) {
     console.error(`Error grading submission:`, error);
     return NextResponse.json({ error: 'Failed to grade submission' }, { status: 500 });

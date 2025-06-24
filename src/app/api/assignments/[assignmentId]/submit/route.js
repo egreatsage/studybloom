@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../auth/[...nextauth]/route';
 import connectDB from '@/lib/mongodb';
 import Assignment from '@/models/Assignment';
-import Enrollment from '@/models/Enrollment';
+
 import { v2 as cloudinary } from 'cloudinary';
 
 cloudinary.config({

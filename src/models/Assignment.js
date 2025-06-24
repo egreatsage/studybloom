@@ -1,5 +1,3 @@
-// src/models/Assignment.js
-
 import mongoose from 'mongoose';
 
 const { Schema, model, models } = mongoose;
@@ -14,7 +12,6 @@ const submissionSchema = new Schema({
     url: { type: String, required: true },
     name: { type: String, required: true },
   }],
-  // ADD THE COMMENT FIELD
   comment: {
     type: String,
     trim: true,
@@ -26,8 +23,6 @@ const submissionSchema = new Schema({
   grade: { 
     type: Number,
     min: 0,
-    max: 100,
-    default: null
   },
   feedback: {
     type: String,
@@ -36,18 +31,15 @@ const submissionSchema = new Schema({
   gradedBy: {
     type: Schema.Types.ObjectId,
     ref: 'User',
-    default: null // MAKE THIS OPTIONAL
   },
   gradedAt: {
     type: Date,
-    default: null // MAKE THIS OPTIONAL
   }
 }, {
   timestamps: true
 });
 
 const assignmentSchema = new Schema({
-  //... (rest of the assignmentSchema remains the same)
   title: { 
     type: String, 
     required: true 
@@ -77,12 +69,25 @@ const assignmentSchema = new Schema({
     ref: 'User',
     required: true
   },
+
+  assessmentType: {
+    type: String,
+    enum: ['Assignment', 'CAT', 'Exam'],
+    required: true,
+    default: 'Assignment',
+  },
+  maxScore: {
+    type: Number,
+    required: true,
+    default: 10,
+  },
+
   submissions: [submissionSchema]
 }, { 
   timestamps: true 
 });
 
-// Index for faster queries
+
 assignmentSchema.index({ unit: 1 });
 assignmentSchema.index({ course: 1 });
 assignmentSchema.index({ 'submissions.student': 1 });

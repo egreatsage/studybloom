@@ -2,33 +2,41 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import useAssignmentStore from '@/lib/stores/assignmentStore';
+import useEnrollmentStore from '@/lib/stores/enrollmentStore';
 import { useSession } from 'next-auth/react';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import StudentAssignmentItem from '@/components/student/StudentAssignmentItem';
+import TotalScoreCard from '@/components/student/TotalScoreCard';
 
 export default function StudentAssignmentsPage() {
   const { data: session } = useSession();
   const { assignments, fetchAssignments, submitAssignment, loading: assignmentsLoading } = useAssignmentStore();
+  const { courses: enrolledCourses, fetchEnrolledCourses } = useEnrollmentStore();
+  const [currentCourseId, setCurrentCourseId] = useState(null);
 
   const memoizedFetchAssignments = useCallback(() => {
     fetchAssignments();
   }, [fetchAssignments]);
 
-  // This simple useEffect fetches all relevant assignments for the logged-in student.
   useEffect(() => {
     if (session?.user?.id) {
-      // We call fetchAssignments() with NO arguments.
-      // The API now knows how to handle this for a student.
       memoizedFetchAssignments();
+      fetchEnrolledCourses();
     }
-  }, [session?.user?.id, memoizedFetchAssignments]);
+  }, [session?.user?.id, memoizedFetchAssignments, fetchEnrolledCourses]);
+
+  // Set current course ID from the first assignment if available
+  useEffect(() => {
+    if (assignments.length > 0 && assignments[0].course?._id) {
+      setCurrentCourseId(assignments[0].course._id);
+    }
+  }, [assignments]);
 
   const handleSubmission = async (formData) => {
     const assignmentId = formData.get('assignmentId');
     await submitAssignment(assignmentId, formData);
   };
   
-  // We can get the course name from the first assignment in the list.
   const courseName = assignments.length > 0 ? assignments[0].course.name : 'your course';
 
   return (
@@ -36,7 +44,12 @@ export default function StudentAssignmentsPage() {
       <h1 className="text-3xl font-bold text-gray-800 mb-2">My Assignments</h1>
       <h2 className="text-xl text-gray-600 mb-6">For {courseName}</h2>
       
-      {/* The course filter dropdown is removed as it's no longer needed. */}
+      {/* Display TotalScoreCard if we have a current course */}
+      {currentCourseId && (
+        <div className="mb-8">
+          <TotalScoreCard courseId={currentCourseId} />
+        </div>
+      )}
 
       <div className="space-y-4">
         {assignmentsLoading ? (
@@ -48,7 +61,6 @@ export default function StudentAssignmentsPage() {
             <p className="text-gray-500">You have no assignments at the moment.</p>
           </div>
         ) : (
-          // The assignments are already filtered by the API, so we can map them directly.
           assignments.map(assignment => (
             <StudentAssignmentItem 
               key={assignment._id}

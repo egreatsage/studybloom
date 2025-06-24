@@ -6,9 +6,9 @@ import connectDB from '@/lib/mongodb';
 import User from '@/models/User';
 import Course from '@/models/Course';
 
-
 export const dynamic = 'force-dynamic';
 
+// GET function remains the same...
 export async function GET(request) {
   try {
     const session = await getServerSession(authOptions);
@@ -30,12 +30,10 @@ export async function GET(request) {
         if (student && student.course) {
             query.course = student.course;
         } else {
-            // If student has no course, they have no assignments
             return NextResponse.json([]);
         }
     }
     
-    // Override course/unit if specifically requested
     if (courseId) query.course = courseId;
     if (unitId) query.unit = unitId;
 
@@ -45,7 +43,6 @@ export async function GET(request) {
       .populate('createdBy', 'name email')
       .populate('submissions.student', 'name email');
 
-    // Filter submissions if user is a student
     if (session.user.role === 'student') {
       assignments.forEach(assignment => {
         assignment.submissions = assignment.submissions.filter(
@@ -60,6 +57,8 @@ export async function GET(request) {
   }
 }
 
+
+// --- MODIFIED POST FUNCTION ---
 export async function POST(request) {
   try {
     const session = await getServerSession(authOptions);
@@ -68,26 +67,44 @@ export async function POST(request) {
     }
 
     const body = await request.json();
-    // ADD `fileUrl` to destructuring
-    const { title, description, dueDate, unitId, courseId, fileUrl } = body;
+    const { title, description, dueDate, unitId, courseId, fileUrl, assessmentType } = body;
 
-    if (!title || !description || !dueDate || !unitId || !courseId) {
+    if (!title || !description || !dueDate || !unitId || !courseId || !assessmentType) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
       );
     }
 
+    // --- NEW LOGIC ---
+    let maxScore;
+    switch (assessmentType) {
+      case 'Assignment':
+        maxScore = 10;
+        break;
+      case 'CAT':
+        maxScore = 30;
+        break;
+      case 'Exam':
+        maxScore = 70;
+        break;
+      default:
+        return NextResponse.json({ error: 'Invalid assessment type' }, { status: 400 });
+    }
+    // --- END NEW LOGIC ---
+
     await connectDB();
 
     const assignment = await Assignment.create({
       title,
       description,
-      fileUrl, // ADD this field
+      fileUrl,
       dueDate: new Date(dueDate),
       unit: unitId,
       course: courseId,
       createdBy: session.user.id,
+      assessmentType, // Store the type
+      maxScore,       // Store the calculated max score
       submissions: []
     });
 
@@ -101,7 +118,8 @@ export async function POST(request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
-// ... (PUT and DELETE functions remain the same for now)
+
+// --- MODIFIED PUT FUNCTION ---
 export async function PUT(request) {
   try {
     const session = await getServerSession(authOptions);
@@ -110,7 +128,7 @@ export async function PUT(request) {
     }
 
     const body = await request.json();
-    const { id, title, description, dueDate, fileUrl } = body; // ADD fileUrl
+    const { id, title, description, dueDate, fileUrl, assessmentType } = body;
 
     if (!id) {
       return NextResponse.json(
@@ -136,7 +154,24 @@ export async function PUT(request) {
     if (title) assignment.title = title;
     if (description) assignment.description = description;
     if (dueDate) assignment.dueDate = new Date(dueDate);
-    if (fileUrl) assignment.fileUrl = fileUrl; // ADD this line
+    if (fileUrl) assignment.fileUrl = fileUrl;
+
+    // --- NEW LOGIC ---
+    if (assessmentType) {
+      assignment.assessmentType = assessmentType;
+      switch (assessmentType) {
+        case 'Assignment':
+          assignment.maxScore = 10;
+          break;
+        case 'CAT':
+          assignment.maxScore = 30;
+          break;
+        case 'Exam':
+          assignment.maxScore = 70;
+          break;
+      }
+    }
+    // --- END NEW LOGIC ---
 
     await assignment.save();
 
@@ -151,6 +186,7 @@ export async function PUT(request) {
   }
 }
 
+// DELETE function remains the same...
 export async function DELETE(request) {
   try {
     const session = await getServerSession(authOptions);

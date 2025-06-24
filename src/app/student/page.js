@@ -10,6 +10,8 @@ import RegisteredUnits from '@/components/RegisteredUnits';
 import AssignmentsList from '@/components/AssignmentsList';
 import AttendanceSummary from '@/components/student/AttendanceSummary';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import TotalScoreCard from '@/components/student/TotalScoreCard'; // Import the new component
+import useEnrollmentStore from '@/lib/stores/enrollmentStore';
 import { 
   BookOpen, 
   Calendar, 
@@ -41,7 +43,7 @@ const StudentDashboard = () => {
   useEffect(() => {
     fetchCurrentSemester();
   }, [fetchCurrentSemester]);
-
+  const { courses: enrolledCourses, fetchEnrolledCourses } = useEnrollmentStore();
   const currentRegistrations = getCurrentSemesterRegistrations();
 
   const tabs = [
@@ -49,6 +51,7 @@ const StudentDashboard = () => {
     { id: 'register', label: 'Register Units', icon: ClipboardList },
     { id: 'attendance', label: 'Attendance', icon: Users },
     { id: 'assignments', label: 'Assignments', icon: GraduationCap }
+      
   ];
 
   const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -221,6 +224,9 @@ const StudentDashboard = () => {
               <div className="bg-white/70 backdrop-blur-sm rounded-xl shadow-sm border border-white/50 overflow-hidden">
                 <RegisteredUnits />
               </div>
+              {enrolledCourses.map(course => (
+                  <TotalScoreCard key={course._id} courseId={course._id} />
+                ))}
               <div className="bg-white/70 backdrop-blur-sm rounded-xl shadow-sm border border-white/50 overflow-hidden">
                 <AttendanceSummary />
               </div>
