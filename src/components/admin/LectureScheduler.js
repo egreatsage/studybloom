@@ -501,22 +501,31 @@ export default function LectureScheduler({ timetableId }) {
                     <>
                       <div>
                         <label className="block text-sm font-medium mb-2">Building</label>
-                        <input
-                          type="text"
+                        <select
                           value={formData.venue.building}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            venue: { ...formData.venue, building: e.target.value }
-                          })}
+                          onChange={(e) => {
+                            setFormData({
+                              ...formData,
+                              venue: { 
+                                ...formData.venue, 
+                                building: e.target.value,
+                                room: '' // Reset room when building changes
+                              }
+                            });
+                          }}
                           className="w-full p-2 border rounded-lg"
                           required={!formData.metadata.isOnline}
-                        />
+                        >
+                          <option value="">Select Building</option>
+                          {[...new Set(venues.map(v => v.building))].map(building => (
+                            <option key={building} value={building}>{building}</option>
+                          ))}
+                        </select>
                       </div>
 
                       <div>
                         <label className="block text-sm font-medium mb-2">Room</label>
-                        <input
-                          type="text"
+                        <select
                           value={formData.venue.room}
                           onChange={(e) => setFormData({
                             ...formData,
@@ -524,7 +533,16 @@ export default function LectureScheduler({ timetableId }) {
                           })}
                           className="w-full p-2 border rounded-lg"
                           required={!formData.metadata.isOnline}
-                        />
+                          disabled={!formData.venue.building} // Disable if no building selected
+                        >
+                          <option value="">Select Room</option>
+                          {venues
+                            .filter(v => v.building === formData.venue.building)
+                            .map(venue => (
+                              <option key={venue.room} value={venue.room}>{venue.room}</option>
+                            ))
+                          }
+                        </select>
                       </div>
                     </>
                   )}

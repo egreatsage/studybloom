@@ -19,9 +19,12 @@ import {
   FaChevronRight,
   FaCog
 } from 'react-icons/fa';
-
+import { MdDashboard } from "react-icons/md";
 const menuItems = [
+  ,
+  { path: '/admin', icon: MdDashboard, label: 'Dashboard' },
   { path: '/admin/users', icon: FaUsers, label: 'Users' },
+  
   { path: '/admin/schools', icon: FaUniversity, label: 'Schools' },
   { path: '/admin/departments', icon: FaBuilding, label: 'Departments' },
   { path: '/admin/courses', icon: FaGraduationCap, label: 'Courses' },

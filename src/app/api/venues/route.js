@@ -17,15 +17,10 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const building = searchParams.get('building');
     const type = searchParams.get('type');
-    const minCapacity = searchParams.get('minCapacity');
-    const isActive = searchParams.get('isActive');
 
-    // Build query
     const query = {};
     if (building) query.building = building;
     if (type) query.type = type;
-    if (minCapacity) query.capacity = { $gte: parseInt(minCapacity) };
-    if (isActive !== null) query.isActive = isActive === 'true';
 
     const venues = await Venue.find(query).sort({ building: 1, room: 1 });
 
@@ -50,12 +45,12 @@ export async function POST(request) {
     await connectDB();
 
     const data = await request.json();
-    const { building, room, capacity, type, facilities } = data;
+    const { building, room, type } = data;
 
     // Validate required fields
-    if (!building || !room || !capacity) {
+    if (!building || !room) {
       return NextResponse.json(
-        { error: 'Building, room, and capacity are required' },
+        { error: 'Building and room are required' },
         { status: 400 }
       );
     }
@@ -73,10 +68,7 @@ export async function POST(request) {
     const venue = await Venue.create({
       building,
       room,
-      capacity,
-      type: type || 'lecture_hall',
-      facilities: facilities || [],
-      isActive: true
+      type: type || 'lecture_hall'
     });
 
     return NextResponse.json(venue, { status: 201 });
@@ -110,7 +102,7 @@ export async function PUT(request) {
     }
 
     const data = await request.json();
-    const { capacity, type, facilities, isActive } = data;
+    const { building, room, type } = data;
 
     const venue = await Venue.findById(id);
     if (!venue) {
@@ -121,10 +113,9 @@ export async function PUT(request) {
     }
 
     // Update fields
-    if (capacity !== undefined) venue.capacity = capacity;
+    if (building) venue.building = building;
+    if (room) venue.room = room;
     if (type) venue.type = type;
-    if (facilities) venue.facilities = facilities;
-    if (isActive !== undefined) venue.isActive = isActive;
 
     await venue.save();
 
