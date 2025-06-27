@@ -27,17 +27,21 @@ export default function ParentSidebar() {
       </button>
 
       <div
-        className={`fixed top-0 left-0 h-full bg-white shadow-lg transition-transform duration-300 ease-in-out z-40
-          ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
-          lg:translate-x-0 lg:w-64 lg:static`}
+        className={`fixed top-0 left-0 h-full bg-white shadow-lg transition-transform duration-300 ease-in-out z-40 overflow-y-auto
+          ${isMobileMenuOpen ? 'translate-x-0 w-64' : '-translate-x-full'}
+          lg:translate-x-0 lg:static lg:w-64`}
       >
-        <div className="p-6 border-b">
-          <h1 className="text-xl font-bold text-indigo-600">Parent Portal</h1>
-          {session?.user && (
-            <div className="mt-2 text-sm">
-              <p className="text-gray-600">{session.user.name}</p>
+        <div className="p-6 border-b lg:flex lg:flex-col">
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <h1 className="text-xl font-bold text-indigo-600">Parent Portal</h1>
+              {session?.user && (
+                <div className="mt-2 text-sm">
+                  <p className="text-gray-600">{session.user.name}</p>
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
         <nav className="p-4">
           <ul className="space-y-2">
@@ -51,7 +55,7 @@ export default function ParentSidebar() {
                     className={`flex items-center space-x-3 p-3 rounded-lg transition-colors
                       ${isActive 
                         ? 'bg-indigo-50 text-indigo-600' 
-                        : 'text-gray-700 hover:bg-gray-100'
+                        : 'text-gray-700 hover:bg-indigo-50'
                       }`}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >

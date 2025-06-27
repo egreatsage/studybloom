@@ -51,7 +51,7 @@ export async function GET(request) {
         }
     })
     // Populate student name and regNumber for the report
-    .populate('attendance.student', 'name regNumber') 
+    .populate('attendance.student', 'name regNumber phoneNumber email') 
     .sort({ date: 1, 'lecture.startTime': 1 });
 
     // Group instances by date

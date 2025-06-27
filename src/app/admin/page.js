@@ -136,19 +136,19 @@ const AdminDashboard = () => {
     fetchDashboardData();
   }, [status, session]);
 
-  if (status === 'loading' || loadingDashboard) {
-    return (
-      <div className="flex items-center justify-center h-screen t ">
-        <div className="text-center">
-          <div className="relative">
-            <FaSpinner className="animate-spin h-12 w-12 text-blue-600 mx-auto mb-4" />
-            <div className="absolute inset-0 h-12 w-12 bg-white/20 rounded-full blur-xl animate-pulse mx-auto" />
-          </div>
-          <p className="text-gray-800 text-lg font-medium">Loading dashboard...</p>
-        </div>
-      </div>
-    );
-  }
+  // if (status === 'loading' || loadingDashboard) {
+  //   return (
+  //     <div className="flex items-center justify-center h-screen t ">
+  //       <div className="text-center">
+  //         <div className="relative">
+  //           <FaSpinner className="animate-spin h-12 w-12 text-blue-600 mx-auto mb-4" />
+  //           <div className="absolute inset-0 h-12 w-12 bg-white/20 rounded-full blur-xl animate-pulse mx-auto" />
+  //         </div>
+  //         <p className="text-gray-800 text-lg font-medium">Loading dashboard...</p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   if (error) {
     return (
@@ -247,18 +247,18 @@ const DashboardLink = ({ icon: Icon, title, href, description }) => (
     <Link href={href} className="relative z-10 block">
       <div className="flex items-start justify-between mb-4">
         <div className="p-3 bg-white/20 backdrop-blur-sm rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300">
-          <Icon className="text-gray-500 text-xl" />
+          <Icon className="text-gray-800 text-xl" />
         </div>
         <div className="p-2 bg-white/10 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
-          <FaArrowRight className="text-gray-500 text-sm" />
+          <FaArrowRight className="text-gray-800 text-sm" />
         </div>
       </div>
       
-      <h3 className="text-lg sm:text-xl font-bold text-gray-500 mb-2 group-hover:text-gray-500 transition-colors duration-300">
+      <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-2 group-hover:text-gray-500 transition-colors duration-300">
         {title}
       </h3>
       
-      <p className="text-gray-500/60 text-sm leading-relaxed group-hover:text-gray-500/80 transition-colors duration-300">
+      <p className="text-gray-800/60 text-sm leading-relaxed group-hover:text-gray-800/80 transition-colors duration-300">
         {description}
       </p>
       

@@ -27,7 +27,7 @@ const AttendanceReport = ({ reportData, teacherName, dateRange, onClose }) => {
 
   const handleDownload = async () => {
     try {
-      await toPDF();
+       toPDF();
     } catch (error) {
       console.error('PDF generation failed:', error);
       // Fallback: try window.print()
@@ -36,7 +36,7 @@ const AttendanceReport = ({ reportData, teacherName, dateRange, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 md:p-4">
         <div className="bg-white rounded-lg shadow-2xl w-full max-w-4xl h-[90vh] flex flex-col">
             {/* Header with Controls */}
             <div className="flex-shrink-0 p-4 bg-gray-50 border-b rounded-t-lg flex justify-between items-center">
@@ -56,7 +56,7 @@ const AttendanceReport = ({ reportData, teacherName, dateRange, onClose }) => {
             </div>
 
             {/* Scrollable Report Content */}
-            <div className="flex-grow overflow-y-auto p-8">
+            <div className="flex-grow overflow-y-auto md:p-8 px-1 py-8">
                 <div ref={targetRef} style={{ fontFamily: 'Arial, sans-serif' }}>
                     <div style={{ marginBottom: '24px' }}>
                         <h1 style={{ fontSize: '30px', fontWeight: 'bold', marginBottom: '8px' }}>
@@ -111,12 +111,19 @@ const AttendanceReport = ({ reportData, teacherName, dateRange, onClose }) => {
                                 }}>
                                     {instance.lecture.startTime} - {instance.lecture.endTime}
                                 </p>
-                                <table style={{ 
-                                    width: '100%', 
-                                    fontSize: '14px',
-                                    borderCollapse: 'collapse',
-                                    marginTop: '8px'
+                                <div style={{
+                                    overflowX: 'auto',
+                                    width: '100%',
+                                    WebkitOverflowScrolling: 'touch',
+                                    msOverflowStyle: '-ms-autohiding-scrollbar'
                                 }}>
+                                    <table style={{ 
+                                        width: '100%', 
+                                        fontSize: '14px',
+                                        borderCollapse: 'collapse',
+                                        marginTop: '8px',
+                                        minWidth: '500px' // Ensures table won't shrink too much on mobile
+                                    }}>
                                     <thead>
                                     <tr style={{ backgroundColor: '#f9fafb' }}>
                                         <th style={{ 
@@ -125,6 +132,27 @@ const AttendanceReport = ({ reportData, teacherName, dateRange, onClose }) => {
                                             border: '1px solid #e5e7eb'
                                         }}>
                                             Student Name
+                                        </th>
+                                         <th style={{ 
+                                            padding: '4px 8px', 
+                                            textAlign: 'left',
+                                            border: '1px solid #e5e7eb'
+                                        }}>
+                                            Reg Number
+                                        </th>
+                                         <th style={{ 
+                                            padding: '4px 8px', 
+                                            textAlign: 'left',
+                                            border: '1px solid #e5e7eb'
+                                        }}>
+                                            Phone Number
+                                        </th>
+                                          <th style={{ 
+                                            padding: '4px 8px', 
+                                            textAlign: 'left',
+                                            border: '1px solid #e5e7eb'
+                                        }}>
+                                            Email
                                         </th>
                                         <th style={{ 
                                             padding: '4px 8px', 
@@ -142,7 +170,25 @@ const AttendanceReport = ({ reportData, teacherName, dateRange, onClose }) => {
                                             padding: '4px 8px',
                                             border: '1px solid #e5e7eb'
                                         }}>
-                                            {att.student.name}
+                                         {att.student.name}
+                                        </td>
+                                        <td style={{ 
+                                            padding: '4px 8px',
+                                            border: '1px solid #e5e7eb'
+                                        }}>
+                                            {att.student.regNumber} 
+                                        </td>
+                                          <td style={{ 
+                                            padding: '4px 8px',
+                                            border: '1px solid #e5e7eb'
+                                        }}>
+                                            {att.student.phoneNumber} 
+                                        </td>
+                                          <td style={{ 
+                                            padding: '4px 8px',
+                                            border: '1px solid #e5e7eb'
+                                        }}>
+                                            {att.student.email} 
                                         </td>
                                         <td style={{ 
                                             padding: '4px 8px',
@@ -155,7 +201,8 @@ const AttendanceReport = ({ reportData, teacherName, dateRange, onClose }) => {
                                         </tr>
                                     ))}
                                     </tbody>
-                                </table>
+                                    </table>
+                                </div>
                                 </div>
                             ))}
                             </div>

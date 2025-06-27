@@ -539,7 +539,7 @@ export default function LectureScheduler({ timetableId }) {
                           {venues
                             .filter(v => v.building === formData.venue.building)
                             .map(venue => (
-                              <option key={venue.room} value={venue.room}>{venue.room}</option>
+                              <option key={venue.room} value={venue.room}>{venue.room}({venue.type})</option>
                             ))
                           }
                         </select>
