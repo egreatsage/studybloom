@@ -1,7 +1,9 @@
 import { useState, useMemo } from 'react';
 import { FaFilter } from 'react-icons/fa';
+import { useSession } from 'next-auth/react';
 
 export default function AttendanceTable({ records }) {
+  
   const [filter, setFilter] = useState('all');
 
   const filteredRecords = useMemo(() => {
@@ -40,38 +42,40 @@ export default function AttendanceTable({ records }) {
           </select>
         </div>
       </div>
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200 text-sm sm:text-base">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-4 sm:px-6 py-3 text-left font-medium text-gray-500 uppercase">Date</th>
-              <th className="px-4 sm:px-6 py-3 text-left font-medium text-gray-500 uppercase">Unit</th>
-              <th className="px-4 sm:px-6 py-3 text-left font-medium text-gray-500 uppercase">Status</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {filteredRecords.map(record => (
-              <tr key={record._id}>
-                <td className="px-4 sm:px-6 py-4 whitespace-nowrap">{new Date(record.date).toLocaleDateString()}</td>
-                <td className="px-4 sm:px-6 py-4 whitespace-nowrap">{record.unit?.name ?? 'N/A'} ({record.unit?.code ?? 'N/A'})</td>
-                <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
-                  <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadge(record.status)}`}>
-                    {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
-                  </span>
-                </td>
-              </tr>
-            ))}
-
-             {filteredRecords.length === 0 && (
+      
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200 text-sm sm:text-base">
+            <thead className="bg-gray-50">
               <tr>
-                <td colSpan="3" className="text-center py-8 text-gray-500">
-                  No records match the current filter.
-                </td>
+                <th className="px-4 sm:px-6 py-3 text-left font-medium text-gray-500 uppercase">Date</th>
+                <th className="px-4 sm:px-6 py-3 text-left font-medium text-gray-500 uppercase">Unit</th>
+                <th className="px-4 sm:px-6 py-3 text-left font-medium text-gray-500 uppercase">Status</th>
               </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filteredRecords.map(record => (
+                <tr key={record._id}>
+                  <td className="px-4 sm:px-6 py-4 whitespace-nowrap">{new Date(record.date).toLocaleDateString()}</td>
+                  <td className="px-4 sm:px-6 py-4 whitespace-nowrap">{record.unit?.name ?? 'N/A'} ({record.unit?.code ?? 'N/A'})</td>
+                  <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+                    <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadge(record.status)}`}>
+                      {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+
+              {filteredRecords.length === 0 && (
+                <tr>
+                  <td colSpan="3" className="text-center py-8 text-gray-500">
+                    No records match the current filter.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      
     </div>
   );
 }

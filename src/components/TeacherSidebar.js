@@ -14,15 +14,17 @@ import {
   FaGraduationCap,
   FaChevronLeft,
   FaChevronRight,
-  FaBell
+  FaBell,
+  FaUsers
 } from 'react-icons/fa';
 
 const menuItems = [
   { path: '/teacher', icon: FaChalkboardTeacher, label: 'Dashboard' },
   { path: '/teacher/schedule', icon: FaCalendarAlt, label: 'My Schedule' },
   { path: '/teacher/attendance', icon: FaClipboardList, label: 'Attendance' },
-  // { path: '/teacher/assignments', icon: FaClipboardList, label: 'Assignments' },
+
   { path: '/teacher/grading', icon: FaGraduationCap, label: 'Assignments' },
+  { path: '/teacher/my-students', icon: FaUsers, label: 'My Students' },
    { path: '/teacher/my-notifications', icon: FaBell, label: 'Notifications' },
 ];
 
