@@ -49,7 +49,7 @@ const StudentAssignmentItem = ({ assignment, studentId, onSubmission }) => {
       return <span className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium bg-blue-100 text-blue-800 rounded-full shadow-sm"><FaCheckCircle className="w-3 h-3" />Submitted</span>;
     }
     if (isPastDue) {
-      return <span className="px-3 py-1.5 text-xs font-medium bg-red-100 text-red-700 rounded-full shadow-sm">Past Due</span>;
+      return <span className="px-3 py-1.5 text-sm font-bold bg-red-200 text-red-600 rounded-full shadow-sm">Past Due</span>;
     }
     return <span className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium bg-amber-100 text-amber-800 rounded-full shadow-sm"><FaHourglassHalf className="w-3 h-3" />Pending</span>;
   };

@@ -42,7 +42,7 @@ const useUnitRegistrationStore = create((set, get) => ({
         set({ currentSemester: data, loading: false });
       } else {
         set({ currentSemester: null, loading: false });
-        toast.error('No active semester found');
+       
       }
     } catch (error) {
       set({ error: error.message, loading: false });

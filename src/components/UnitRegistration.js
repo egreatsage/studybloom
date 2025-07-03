@@ -35,7 +35,7 @@ const UnitRegistration = () => {
 
   const handleRegister = async (unitId) => {
     if (!currentSemester?._id) {
-      toast.error('No active semester found');
+    
       return;
     }
 

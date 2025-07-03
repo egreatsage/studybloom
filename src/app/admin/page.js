@@ -26,33 +26,45 @@ import useDepartmentStore from '@/lib/stores/departmentStore';
 import useTimetableStore from '@/lib/stores/timetableStore';
 import Link from 'next/link';
 
-const StatCard = ({ icon: Icon, title, value, bgColor, trend, trendValue }) => (
-  <div className={`group relative overflow-hidden rounded-3xl p-6 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 ${bgColor} backdrop-blur-lg border border-white/20`}>
-    
-    <div className="absolute inset-0 bg-gradient-to-br from-white/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-    
-   
-    <div className="absolute -top-4 -right-4 w-20 h-20 bg-white/10 b rounded-full blur-xl group-hover:scale-110 transition-transform duration-500" />
-    
-    <div className="relative z-10 flex items-start justify-between">
-      <div className="flex-1">
-        <div className="flex items-center space-x-3 mb-4">
-          <div className="p-3 bg-white/20 backdrop-blur-sm rounded-2xl shadow-lg">
-            <Icon className="text-gray-500 text-2xl drop-shadow-sm" />
-          </div>
-          {trend && (
-            <div className="flex items-center space-x-1 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1">
-              <IoIosTrendingDown className="text-gray-500 text-xs" />
-              <span className="text-gray-500 text-xs font-medium">{trendValue}</span>
+const StatCard = ({ icon: Icon, title, value, bgColor, trend, trendValue, href }) => {
+  const cardContent = (
+    <div className={`group relative overflow-hidden rounded-3xl p-6 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 ${bgColor} backdrop-blur-lg border border-white/20 cursor-pointer`}>
+      
+      <div className="absolute inset-0 bg-gradient-to-br from-white/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      
+     
+      <div className="absolute -top-4 -right-4 w-20 h-20 bg-white/10 b rounded-full blur-xl group-hover:scale-110 transition-transform duration-500" />
+      
+      <div className="relative z-10 flex items-start justify-between">
+        <div className="flex-1">
+          <div className="flex items-center space-x-3 mb-4">
+            <div className="p-3 bg-white/20 backdrop-blur-sm rounded-2xl shadow-lg">
+              <Icon className="text-gray-500 text-2xl drop-shadow-sm" />
             </div>
-          )}
+            {trend && (
+              <div className="flex items-center space-x-1 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1">
+                <IoIosTrendingDown className="text-gray-500 text-xs" />
+                <span className="text-gray-500 text-xs font-medium">{trendValue}</span>
+              </div>
+            )}
+          </div>
+          <p className="text-gray-500 text-sm font-medium mb-2 tracking-wide">{title}</p>
+          <p className="text-4xl font-bold text-gray-500 drop-shadow-lg">{value.toLocaleString()}</p>
         </div>
-        <p className="text-gray-500 text-sm font-medium mb-2 tracking-wide">{title}</p>
-        <p className="text-4xl font-bold text-gray-500 drop-shadow-lg">{value.toLocaleString()}</p>
       </div>
     </div>
-  </div>
-);
+  );
+
+  if (href) {
+    return (
+      <Link href={href} className="block">
+        {cardContent}
+      </Link>
+    );
+  }
+
+  return cardContent;
+};
 
 const AdminDashboard = () => {
   const { data: session, status } = useSession();
@@ -136,19 +148,7 @@ const AdminDashboard = () => {
     fetchDashboardData();
   }, [status, session]);
 
-  // if (status === 'loading' || loadingDashboard) {
-  //   return (
-  //     <div className="flex items-center justify-center h-screen t ">
-  //       <div className="text-center">
-  //         <div className="relative">
-  //           <FaSpinner className="animate-spin h-12 w-12 text-blue-600 mx-auto mb-4" />
-  //           <div className="absolute inset-0 h-12 w-12 bg-white/20 rounded-full blur-xl animate-pulse mx-auto" />
-  //         </div>
-  //         <p className="text-gray-800 text-lg font-medium">Loading dashboard...</p>
-  //       </div>
-  //     </div>
-  //   );
-  // }
+
 
   if (error) {
     return (
@@ -207,67 +207,23 @@ const AdminDashboard = () => {
 
         {/* Overview Statistics */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
-          <StatCard icon={FaUsers} title="Total Users" value={stats.totalUsers} />
-          <StatCard icon={FaGraduationCap} title="Students" value={stats.totalStudents}/>
-          <StatCard icon={FaChalkboardTeacher} title="Teachers" value={stats.totalTeachers}  />
-          <StatCard icon={FaBook} title="Courses" value={stats.totalCourses} />
-          <StatCard icon={FaUniversity} title="Units" value={stats.totalUnits}/>
-          <StatCard icon={FaBuilding} title="Departments" value={stats.totalDepartments}  />
-          <StatCard icon={FaCalendarAlt} title="Timetables" value={stats.totalTimetables} />
-          <StatCard icon={FaMapMarkerAlt} title="Venues" value={stats.totalVenues}/>
+          <StatCard icon={FaUsers} title="Total Users" value={stats.totalUsers} href="/admin/users" />
+          <StatCard icon={FaGraduationCap} title="Students" value={stats.totalStudents} href="/admin/users?role=student" />
+          <StatCard icon={FaChalkboardTeacher} title="Teachers" value={stats.totalTeachers} href="/admin/users?role=teacher" />
+          <StatCard icon={FaBook} title="Courses" value={stats.totalCourses} href="/admin/courses" />
+          <StatCard icon={FaUniversity} title="Units" value={stats.totalUnits} href="/admin/units" />
+          <StatCard icon={FaBuilding} title="Departments" value={stats.totalDepartments} href="/admin/departments" />
+          <StatCard icon={FaCalendarAlt} title="Timetables" value={stats.totalTimetables} href="/admin/timetables" />
+          <StatCard icon={FaMapMarkerAlt} title="Venues" value={stats.totalVenues} href="/admin/venues" />
         </div>
 
-        {/* Quick Access Links */}
-        <div className="mb-8">
-          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-6 sm:mb-8">Quick Access</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-            <DashboardLink icon={FaUsers} title="Manage Users" href="/admin/users" description="Add, edit, and manage user accounts" />
-            <DashboardLink icon={FaBook} title="Manage Courses" href="/admin/courses" description="Course curriculum and structure" />
-            <DashboardLink icon={FaUniversity} title="Manage Units" href="/admin/units" description="Academic units and modules" />
-            <DashboardLink icon={FaCalendarAlt} title="Manage Timetables" href="/admin/timetables" description="Schedule and timing management" />
-            <DashboardLink icon={FaMapMarkerAlt} title="Manage Venues" href="/admin/venues" description="Campus locations and facilities" />
-            <DashboardLink icon={FaBuilding} title="Manage Departments" href="/admin/departments" description="Academic departments" />
-            <DashboardLink icon={FaGraduationCap} title="Manage Schools" href="/admin/schools" description="School administration" />
-            <DashboardLink icon={FaChalkboardTeacher} title="Teaching Assignments" href="/admin/timetables?tab=teaching" description="Instructor assignments" />
-          </div>
-        </div>
+      
+
       </div>
     </div>
   );
 };
 
-const DashboardLink = ({ icon: Icon, title, href, description }) => (
-  <div className="group relative overflow-hidden bg-white/10 backdrop-blur-lg rounded-3xl p-6 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-white/20">
-    {/* Hover gradient overlay */}
-    <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-    
-    {/* Floating decoration */}
-    <div className="absolute -top-3 -right-3 w-16 h-16 bg-white/5 rounded-full blur-xl group-hover:scale-110 transition-transform duration-500" />
-    
-    <Link href={href} className="relative z-10 block">
-      <div className="flex items-start justify-between mb-4">
-        <div className="p-3 bg-white/20 backdrop-blur-sm rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300">
-          <Icon className="text-gray-800 text-xl" />
-        </div>
-        <div className="p-2 bg-white/10 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
-          <FaArrowRight className="text-gray-800 text-sm" />
-        </div>
-      </div>
-      
-      <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-2 group-hover:text-gray-500 transition-colors duration-300">
-        {title}
-      </h3>
-      
-      <p className="text-gray-800/60 text-sm leading-relaxed group-hover:text-gray-800/80 transition-colors duration-300">
-        {description}
-      </p>
-      
-      <div className="mt-4 flex items-center space-x-2 text-gray-500/40 group-hover:text-gray-500/60 transition-colors duration-300">
-        <FaEye className="text-xs" />
-        <span className="text-xs font-medium">View Details</span>
-      </div>
-    </Link>
-  </div>
-);
+
 
 export default AdminDashboard;
