@@ -34,6 +34,7 @@ export const authOptions = {
             email: user.email,
             name: user.name,
             role: user.role,
+            photoUrl: user.photoUrl || null,
           };
         } catch (error) {
           console.error('Auth error:', error);
@@ -47,6 +48,7 @@ export const authOptions = {
       if (user) {
         token.id = user.id;
         token.role = user.role;
+        
       }
       return token;
     },

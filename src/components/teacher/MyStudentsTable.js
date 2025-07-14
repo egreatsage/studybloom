@@ -248,6 +248,9 @@ const MyStudentsTable = ({ students = [] }) => {
                     <div>
                       <p className="text-sm text-gray-500">Email</p>
                       <p className="font-medium text-gray-900">{selectedStudent.email}</p>
+                      <div>
+                        <a href={`mailto:${selectedStudent.email}`} className="text-blue-600 hover:underline">email this student</a>
+                      </div>
                     </div>
                   </div>
                   <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
@@ -255,6 +258,9 @@ const MyStudentsTable = ({ students = [] }) => {
                     <div>
                       <p className="text-sm text-gray-500">Phone</p>
                       <p className="font-medium text-gray-900">{selectedStudent.phoneNumber}</p>
+                      <div>
+                        <a href={`tel:${selectedStudent.phoneNumber}`} className="text-blue-600 hover:underline">call this student</a>
+                      </div>
                     </div>
                   </div>
                   <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
@@ -298,6 +304,9 @@ const MyStudentsTable = ({ students = [] }) => {
                       <div>
                         <p className="text-sm text-blue-600">Parent Email</p>
                         <p className="font-medium text-blue-900">{selectedStudent.parent.email}</p>
+                        <div>
+                          <a href={`mailto:${selectedStudent.parent.email}`} className="text-blue-600 hover:underline">email this parent</a>
+                        </div>
                       </div>
                     </div>
                     <div className="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg md:col-span-2">
@@ -305,6 +314,9 @@ const MyStudentsTable = ({ students = [] }) => {
                       <div>
                         <p className="text-sm text-blue-600">Parent Phone</p>
                         <p className="font-medium text-blue-900">{selectedStudent.parent.phoneNumber}</p>
+                          <div>
+                          <a href={`tel:${selectedStudent.parent.phoneNumber}`} className="text-blue-600 hover:underline">call this parent</a>
+                          </div>
                       </div>
                     </div>
                   </div>

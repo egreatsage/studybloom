@@ -66,31 +66,35 @@ const SemesterInfo = () => {
 
       <div className="space-y-4">
         <div>
-          <h3 className="text-lg font-medium text-gray-800">{currentSemester.name}</h3>
+          <h3 className="text-lg font-bold tracking-wider text-gray-800">{currentSemester.name}</h3>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-gray-50 rounded-lg p-4">
-            <p className="text-sm text-gray-600 mb-1">Start Date</p>
+        <div className="gap-4">
+          <div className="bg-gray-50 rounded-lg p-4 flex flex-col md:flex-row gap-4">
+           <div className='flex items-center space-x-2'>
+             <p className="text-md text-gray-600 ">Start Date</p>
             <p className="font-medium">{formatDate(currentSemester.startDate)}</p>
-          </div>
-          <div className="bg-gray-50 rounded-lg p-4">
-            <p className="text-sm text-gray-600 mb-1">End Date</p>
+           </div>
+            <div className='flex items-center space-x-2'>
+            <p className="text-md text-gray-600 ">End Date</p>
             <p className="font-medium">{formatDate(currentSemester.endDate)}</p>
-          </div>
-        </div>
-
-        <div className={`rounded-lg p-4 ${getStatusColor()}`}>
+            </div>
+            <div className={`rounded-lg p-4 ${getStatusColor()}`}>
           <div className="flex items-center space-x-2">
             <FaClock />
             <p className="font-medium">
-              {currentSemester.daysRemaining} days remaining for the semester to end
+              ({currentSemester.daysRemaining} days remaining)
             </p>
           </div>
           <p className="text-sm mt-1 opacity-90">
             
           </p>
         </div>
+          </div>
+        
+        </div>
+
+        
 
         {currentSemester.courses && currentSemester.courses.length > 0 && (
           <div className="mt-4">

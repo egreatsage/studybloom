@@ -53,6 +53,7 @@ const StudentDashboard = () => {
     { id: 'assignments', label: 'Assignments', icon: GraduationCap }
       
   ];
+  console.log(session)
 
   const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   const currentDate = new Date().toLocaleDateString([], { 
@@ -66,7 +67,7 @@ const StudentDashboard = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       {/* Header */}
       <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-1 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Left side - Logo and title */}
             <div className="flex items-center space-x-4">
@@ -87,11 +88,7 @@ const StudentDashboard = () => {
                 <Clock className="w-4 h-4" />
                 <span>{currentTime}</span>
               </div>
-              
-              <button className="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
-                <Bell className="w-5 h-5" />
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
-              </button>
+            
 
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
@@ -120,25 +117,7 @@ const StudentDashboard = () => {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Welcome Section */}
-        <div className="mb-8">
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-6 text-white">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <h2 className="text-2xl sm:text-3xl font-bold mb-2">
-                  Welcome back, {session?.user?.name?.split(' ')[0] || 'Student'}! 
-                </h2>
-                
-              </div>
-              <div className="mt-4 sm:mt-0">
-                <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3">
-                  <Award className="w-8 h-8 text-yellow-300 mx-auto" />
-                  <p className="text-xs text-center mt-1">Keep it up!</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+       
 
         {/* Semester Information */}
         <div className="mb-8">
