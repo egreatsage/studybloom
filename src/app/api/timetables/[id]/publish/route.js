@@ -50,7 +50,7 @@ export async function POST(request, { params }) {
     
     if (lectureCount === 0) {
       return NextResponse.json(
-        { error: 'Cannot publish a timetable without lectures' },
+        { error: 'Cannot publish an empty timetable without any lecture lessons,please add a few of them' },
         { status: 400 }
       );
     }

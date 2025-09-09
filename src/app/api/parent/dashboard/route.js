@@ -37,9 +37,12 @@ export async function GET(request) {
         if (!parent || !parent.children) {
             return NextResponse.json({ childrenData: [] });
         }
+        
+        // Ensure children are unique before processing
+        const uniqueChildren = Array.from(new Map(parent.children.map(child => [child._id.toString(), child])).values());
 
         // For each child, fetch their detailed academic records
-        const childrenData = await Promise.all(parent.children.map(async (child) => {
+        const childrenData = await Promise.all(uniqueChildren.map(async (child) => {
             // Get registered units for the current semester
             const unitRegistrations = await UnitRegistration.find({ student: child._id, status: 'active' })
                 .populate({

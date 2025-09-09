@@ -9,8 +9,9 @@ export default function TimetablesPage() {
   const [activeTab, setActiveTab] = useState('timetables');
 
   const tabs = [
-     { id: 'teaching', label: 'Teaching Assignments', icon: FaChalkboardTeacher },
     { id: 'timetables', label: 'Timetables', icon: FaCalendarAlt },
+     { id: 'teaching', label: 'Teaching Assignments', icon: FaChalkboardTeacher },
+    
    
   ];
 

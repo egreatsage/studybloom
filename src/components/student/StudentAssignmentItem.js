@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { FaChevronDown, FaLink, FaCheckCircle, FaHourglassHalf, FaClock, FaFileAlt, FaStar, FaBook, FaCat, FaScroll } from 'react-icons/fa';
+import { FaChevronDown, FaLink, FaCheckCircle, FaHourglassHalf, FaClock, FaFileAlt, FaStar, FaBook,  FaScroll } from 'react-icons/fa';
 import { formatDate } from '@/lib/utils/errorHandler';
 import SubmissionForm from '../SubmissionForm';
+import { IoMdPaper } from "react-icons/io";
 
 const StudentAssignmentItem = ({ assignment, studentId, onSubmission }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -16,7 +17,7 @@ const StudentAssignmentItem = ({ assignment, studentId, onSubmission }) => {
   const getAssessmentTypeInfo = () => {
     switch (assignment.assessmentType) {
       case 'CAT':
-        return { icon: <FaCat className="w-4 h-4 text-orange-600" />, label: 'CAT', color: 'bg-orange-100 text-orange-800' };
+        return { icon: <IoMdPaper className="w-4 h-4 text-orange-600" />, label: 'CAT', color: 'bg-orange-100 text-orange-800' };
       case 'Exam':
         return { icon: <FaScroll className="w-4 h-4 text-red-600" />, label: 'Exam', color: 'bg-red-100 text-red-800' };
       case 'Assignment':

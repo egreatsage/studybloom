@@ -91,8 +91,6 @@ function UnitWithTeacher({ unit }) {
 
 // Enhanced Student Info Card Component
 export default function StudentInfoCard({ student }) {
-  console.log('StudentInfoCard received student:', student);
-  
   if (!student) {
     return (
       <div className="p-8 bg-white rounded-3xl shadow-xl border border-gray-100">
@@ -152,6 +150,9 @@ export default function StudentInfoCard({ student }) {
   const averageGrade = student.assignmentResults.length > 0 
     ? student.assignmentResults.reduce((sum, result) => sum + (result.grade || 0), 0) / student.assignmentResults.length 
     : 0;
+
+  // Ensure unique registered units before mapping
+  const uniqueRegisteredUnits = Array.from(new Map(student.registeredUnits.map(unit => [unit._id, unit])).values());
 
   return (
     <div className="group bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100 hover:border-blue-200 transform hover:-translate-y-2 backdrop-blur-sm">
@@ -247,9 +248,9 @@ export default function StudentInfoCard({ student }) {
               </div>
               <h3 className="text-xl font-bold text-gray-800">Registered Units</h3>
             </div>
-            {student.registeredUnits.length > 0 ? (
+            {uniqueRegisteredUnits.length > 0 ? (
               <div className="space-y-4 max-h-96 overflow-y-auto custom-scrollbar">
-                {student.registeredUnits.map(unit => (
+                {uniqueRegisteredUnits.map(unit => (
                   <UnitWithTeacher key={unit._id} unit={unit} />
                 ))}
               </div>

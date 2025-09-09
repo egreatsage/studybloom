@@ -10,9 +10,6 @@ export default function ParentDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Mock data for demonstration
- 
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -22,13 +19,12 @@ export default function ParentDashboard() {
           throw new Error('Failed to fetch dashboard data');
         }
         const data = await response.json();
-        console.log('API Response:', data);
-        console.log('Data structure:', {
-          hasChildrenData: Boolean(data?.childrenData),
-          childrenCount: data?.childrenData?.length,
-          firstChild: data?.childrenData?.[0]
-        });
-        setDashboardData(data);
+        
+        // Ensure childrenData is unique by _id
+        const uniqueChildrenData = Array.from(new Map(data.childrenData.map(item => [item._id, item])).values());
+        
+        setDashboardData({ ...data, childrenData: uniqueChildrenData });
+        
       } catch (err) {
         setError(err.message);
       } finally {

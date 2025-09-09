@@ -19,28 +19,28 @@ const ScoreItem = ({ label, obtained, total, weight, icon: Icon }) => {
     const colorScheme = getScoreColor(percentage);
     const colorClasses = {
         emerald: {
-            bg: 'bg-emerald-50 border-emerald-100',
-            text: 'text-emerald-700',
-            accent: 'text-emerald-600',
-            progress: 'bg-emerald-500'
+             bg: 'bg-white shadow-md border-gray-200',
+            text: 'text-gray-800',
+            accent: 'text-gray-600',
+            progress: 'bg-gray-500'
         },
         blue: {
-            bg: 'bg-blue-50 border-blue-100',
-            text: 'text-blue-700',
-            accent: 'text-blue-600',
-            progress: 'bg-blue-500'
+            bg: 'bg-white shadow-md border-gray-200',
+            text: 'text-gray-800',
+            accent: 'text-gray-600',
+            progress: 'bg-gray-500'
         },
         amber: {
-            bg: 'bg-amber-50 border-amber-100',
-            text: 'text-amber-700',
-            accent: 'text-amber-600',
-            progress: 'bg-amber-500'
+             bg: 'bg-white shadow-md border-gray-200',
+            text: 'text-gray-800',
+            accent: 'text-gray-600',
+            progress: 'bg-gray-500'
         },
         red: {
-            bg: 'bg-red-50 border-red-100',
-            text: 'text-red-700',
-            accent: 'text-red-600',
-            progress: 'bg-red-500'
+            bg: 'bg-white shadow-md border-gray-200',
+            text: 'text-gray-800',
+            accent: 'text-gray-600',
+            progress: 'bg-gray-500'
         }
     };
 
@@ -69,18 +69,10 @@ const ScoreItem = ({ label, obtained, total, weight, icon: Icon }) => {
             </div>
             
             <div className="space-y-2">
-                <div className="flex justify-between text-sm font-medium text-gray-600">
-                    <span>Progress</span>
+                <div className="flex justify-end text-sm font-medium text-gray-600">
                     <span>Weighted: {weightedScore.toFixed(1)}%</span>
                 </div>
-                <div className="relative w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-                    <div 
-                        className={`${colors.progress} h-full rounded-full transition-all duration-1000 ease-out`}
-                        style={{ width: `${Math.min(percentage, 100)}%` }}
-                    >
-                        <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
-                    </div>
-                </div>
+                
             </div>
         </div>
     );
@@ -100,11 +92,11 @@ const GradeDisplay = ({ totalScore }) => {
     const { grade, color, description } = getGrade(totalScore);
     
     const colorClasses = {
-        emerald: 'from-emerald-500 to-teal-600 text-white',
-        blue: 'from-blue-500 to-indigo-600 text-white',
-        amber: 'from-amber-500 to-orange-600 text-white',
-        green: 'from-green-500 to-orange-500 text-white',
-        red: 'from-red-500 to-pink-600 text-white'
+        emerald: 'from-white to-gray-50 text-gray-800',
+        blue: 'from-white to-gray-50 text-gray-800',
+        amber: 'from-white to-gray-50 text-gray-800',
+        green: 'from-white to-gray-50 text-gray-800',
+        red: 'from-white to-gray-50 text-gray-800'
     };
 
     return (
@@ -209,7 +201,7 @@ export default function TotalScoreCard({ courseId }) {
     ];
 
     return (
-        <div className="max-w-7xl mx-auto p-6 space-y-8">
+        <div className="max-w-7xl mx-auto md:p-6 space-y-8">
             {/* Header */}
             <div className="text-center space-y-2">
                 <h1 className="text-4xl font-black text-gray-800 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">

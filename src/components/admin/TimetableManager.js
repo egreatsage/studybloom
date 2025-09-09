@@ -340,59 +340,43 @@ export default function TimetableManager() {
                   {timetable.createdBy?.name}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => router.push(`/admin/timetables/${timetable._id}/schedule`)}
-                      className="text-blue-600 hover:text-blue-900"
-                      title="Manage Schedule"
-                    >
-                      <FaEye />
-                    </button>
-                    {timetable.status === 'draft' && (
-                      <>
-                        <button
-                          onClick={() => handleEdit(timetable)}
-                          className="text-indigo-600 hover:text-indigo-900"
-                          title="Edit"
-                        >
-                          <FaEdit />
-                        </button>
-                        <button
-                          onClick={() => handlePublish(timetable._id)}
-                          className="text-green-600 hover:text-green-900"
-                          title="Publish"
-                        >
-                          <FaCheck />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(timetable._id)}
-                          className="text-red-600 hover:text-red-900"
-                          title="Delete"
-                        >
-                          <FaTrash />
-                        </button>
-                      </>
-                    )}
-                    {timetable.status === 'published' && (
-                      <>
-                       <button
-                          onClick={() => handleEdit(timetable)}
-                          className="text-indigo-600 hover:text-indigo-900"
-                          title="Edit"
-                        >
-                          <FaEdit />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(timetable._id)}
-                          className="text-red-600 hover:text-red-900"
-                          title="Delete"
-                        >
-                          <FaTrash />
-                        </button>
-                      </>
-                    )}
-                  </div>
-                </td>
+  <div className="relative">
+    <select
+      onChange={(e) => {
+        const action = e.target.value;
+        if (action === 'manage') {
+          router.push(`/admin/timetables/${timetable._id}/schedule`);
+        } else if (action === 'edit') {
+          handleEdit(timetable);
+        } else if (action === 'publish') {
+          handlePublish(timetable._id);
+        } else if (action === 'delete') {
+          handleDelete(timetable._id);
+        }
+        // Reset dropdown after action
+        e.target.value = '';
+      }}
+      className="bg-white border border-gray-300 rounded-md  py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min"
+      defaultValue=""
+    >
+      <option value="" disabled>Actions</option>
+      <option value="manage">Manage Lectures</option>
+      {timetable.status === 'draft' && (
+        <>
+          <option value="edit">Edit</option>
+          <option value="publish">Publish</option>
+          <option value="delete">Delete</option>
+        </>
+      )}
+      {timetable.status === 'published' && (
+        <>
+          <option value="edit">Edit</option>
+          <option value="delete">Delete</option>
+        </>
+      )}
+    </select>
+  </div>
+</td>
               </tr>
             ))}
           </tbody>

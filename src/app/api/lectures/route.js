@@ -140,7 +140,7 @@ export async function POST(request) {
 
     if (!teachingAssignment) {
       return NextResponse.json(
-        { error: 'Teacher is not assigned to this course' },
+        { error: 'Teacher is not assigned to this course ,If you havent kindly go back to teacher assignment and assign this course/unit' },
         { status: 400 }
       );
     }

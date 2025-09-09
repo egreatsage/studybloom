@@ -14,7 +14,8 @@ import {
   FaCalendarAlt,
   FaChevronLeft,
   FaChevronRight,
-  FaCalendarCheck
+  FaCalendarCheck,
+  FaUsers
 } from 'react-icons/fa';
 
 const menuItems = [
@@ -22,6 +23,7 @@ const menuItems = [
   { path: '/student/schedule', icon: FaCalendarAlt, label: 'My Schedule' },
   { path: '/student/assignments', icon: FaClipboardList, label: 'Assignments' },
   { path: '/student/attendance', icon: FaCalendarCheck, label: 'Attendance' },
+  { path: '/student/classmates', icon: FaUsers, label: 'Classmates' },
 ];
 
 export default function StudentSidebar() {
