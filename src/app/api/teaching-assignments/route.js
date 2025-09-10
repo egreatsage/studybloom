@@ -1,252 +1,140 @@
 import { NextResponse } from 'next/server';
+import connectToDatabase from '@/lib/mongodb';
 import TeachingAssignment from '@/models/TeachingAssignment';
-import Unit from '@/models/Unit';
 import User from '@/models/User';
-import Course from '@/models/Course';
-import Semester from '@/models/Semester';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '../auth/[...nextauth]/route';
-import connectDB from '@/lib/mongodb';
+import Unit from '@/models/Unit';
+import Lecture from '@/models/Lecture';
 
+// GET request handler
 export async function GET(request) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    await connectDB();
-
+    await connectToDatabase();
     const { searchParams } = new URL(request.url);
-    const semesterId = searchParams.get('semesterId');
-    const courseId = searchParams.get('courseId');
-    const teacherId = searchParams.get('teacherId');
-    
-    // Build query
-    const query = {};
-    if (semesterId) query.semester = semesterId;
-    if (courseId) query.course = courseId;
-    if (teacherId) query.teacher = teacherId;
-    
-    let assignments;
-    if (session.user.role === 'teacher') {
-      // Teachers can only see their own assignments
-      query.teacher = session.user.id;
-      assignments = await TeachingAssignment.find(query)
-        .populate('course', 'name code description')
-        .populate('teacher', 'name email')
-        .populate('semester', 'name startDate endDate')
-        .populate('units.unit', 'name code');
-    } else if (session.user.role === 'admin') {
-      // Admins can see all assignments
-      assignments = await TeachingAssignment.find(query)
-        .populate('course', 'name code description')
-        .populate('teacher', 'name email')
-        .populate('semester', 'name startDate endDate')
-        .populate('units.unit', 'name code');
-    } else {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const lectureId = searchParams.get('lectureId');
+
+    if (!lectureId) {
+      // Return all assignments if no lectureId is specified
+      const assignments = await TeachingAssignment.find({})
+        .populate('teacher', 'name')
+        .populate('unit', 'name')
+        .populate('lecture', 'topic');
+      return NextResponse.json(assignments);
     }
 
-    return NextResponse.json(assignments);
+    // Find all assignments for the given lecture
+    const assignments = await TeachingAssignment.find({ lecture: lectureId })
+      .populate({
+        path: 'teacher',
+        model: User,
+        select: 'name email',
+      })
+      .populate({
+        path: 'unit',
+        model: Unit,
+        select: 'name code',
+      });
+
+    // Consolidate assignments by teacher to avoid duplicates
+    const consolidated = assignments.reduce((acc, assignment) => {
+      const teacherId = assignment.teacher._id.toString();
+      if (!acc[teacherId]) {
+        acc[teacherId] = {
+          _id: teacherId,
+          teacher: assignment.teacher,
+          units: [],
+          lecture: assignment.lecture,
+        };
+      }
+      acc[teacherId].units.push(assignment.unit);
+      return acc;
+    }, {});
+
+    return NextResponse.json(Object.values(consolidated));
   } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error('Failed to fetch teaching assignments:', error);
+    return NextResponse.json(
+      { message: 'Failed to fetch teaching assignments', error: error.message },
+      { status: 500 }
+    );
   }
 }
 
+// POST request handler
 export async function POST(request) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session || session.user.role !== 'admin') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    await connectToDatabase();
+    const { teacherId, unitId, lectureId } = await request.json();
 
-    const body = await request.json();
-    const { teacherId, courseId, semesterId, unitIds = [] } = body;
-
-    if (!teacherId || !courseId || !semesterId) {
+    // Check for missing fields
+    if (!teacherId || !unitId || !lectureId) {
       return NextResponse.json(
-        { error: 'Teacher ID, Course ID, and Semester ID are required' },
+        { message: 'Teacher, unit, and lecture IDs are required' },
         { status: 400 }
       );
     }
 
-    await connectDB();
-
-    // Validate teacher exists and has role 'teacher'
-    const teacher = await User.findById(teacherId);
-    if (!teacher || teacher.role !== 'teacher') {
-      return NextResponse.json(
-        { error: 'Invalid teacher' },
-        { status: 400 }
-      );
-    }
-
-    // Validate course exists
-    const course = await Course.findById(courseId);
-    if (!course) {
-      return NextResponse.json(
-        { error: 'Course not found' },
-        { status: 404 }
-      );
-    }
-
-    // Validate semester exists
-    const semester = await Semester.findById(semesterId);
-    if (!semester) {
-      return NextResponse.json(
-        { error: 'Semester not found' },
-        { status: 404 }
-      );
-    }
-
-    // Check if assignment already exists
-    let assignment = await TeachingAssignment.findOne({
+    // Prevent duplicate assignments
+    const existingAssignment = await TeachingAssignment.findOne({
       teacher: teacherId,
-      course: courseId,
-      semester: semesterId
+      unit: unitId,
+      lecture: lectureId,
     });
 
-    if (assignment) {
-      // Update existing assignment with new units
-      for (const unitId of unitIds) {
-        const unit = await Unit.findById(unitId);
-        if (unit && unit.course.toString() === courseId) {
-          await assignment.assignUnit(unitId);
-        }
-      }
-    } else {
-      // Create new assignment
-      assignment = await TeachingAssignment.create({
-        teacher: teacherId,
-        course: courseId,
-        semester: semesterId,
-        units: unitIds.map(unitId => ({
-          unit: unitId,
-          isActive: true
-        }))
-      });
+    if (existingAssignment) {
+      return NextResponse.json(
+        { message: 'This teacher is already assigned to this unit for this lecture' },
+        { status: 409 } // 409 Conflict
+      );
     }
 
-    const populatedAssignment = await TeachingAssignment.findById(assignment._id)
-      .populate('course', 'name code description')
-      .populate('teacher', 'name email')
-      .populate('semester', 'name startDate endDate')
-      .populate('units.unit', 'name code');
+    // Create and save the new assignment
+    const newAssignment = new TeachingAssignment({
+      teacher: teacherId,
+      unit: unitId,
+      lecture: lectureId,
+    });
+    await newAssignment.save();
 
-    return NextResponse.json(populatedAssignment, { status: 201 });
+    return NextResponse.json(newAssignment, { status: 201 });
   } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error('Failed to create teaching assignment:', error);
+    return NextResponse.json(
+      { message: 'Failed to create teaching assignment', error: error.message },
+      { status: 500 }
+    );
   }
 }
 
-export async function PUT(request) {
-  try {
-    const session = await getServerSession(authOptions);
-    if (!session || session.user.role !== 'admin') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
-    const action = searchParams.get('action'); // 'assign-unit' or 'unassign-unit'
-
-    if (!id) {
-      return NextResponse.json(
-        { error: 'Assignment ID is required' },
-        { status: 400 }
-      );
-    }
-
-    await connectDB();
-
-    const assignment = await TeachingAssignment.findById(id);
-    if (!assignment) {
-      return NextResponse.json(
-        { error: 'Teaching assignment not found' },
-        { status: 404 }
-      );
-    }
-
-    const body = await request.json();
-
-    if (action === 'assign-unit') {
-      const { unitId } = body;
-      if (!unitId) {
-        return NextResponse.json(
-          { error: 'Unit ID is required' },
-          { status: 400 }
-        );
-      }
-
-      // Validate unit belongs to the same course
-      const unit = await Unit.findById(unitId);
-      if (!unit || unit.course.toString() !== assignment.course.toString()) {
-        return NextResponse.json(
-          { error: 'Unit does not belong to this course' },
-          { status: 400 }
-        );
-      }
-
-      await assignment.assignUnit(unitId);
-    } else if (action === 'unassign-unit') {
-      const { unitId } = body;
-      if (!unitId) {
-        return NextResponse.json(
-          { error: 'Unit ID is required' },
-          { status: 400 }
-        );
-      }
-
-      await assignment.unassignUnit(unitId);
-    } else {
-      return NextResponse.json(
-        { error: 'Invalid action. Use assign-unit or unassign-unit' },
-        { status: 400 }
-      );
-    }
-
-    const populatedAssignment = await TeachingAssignment.findById(assignment._id)
-      .populate('course', 'name code description')
-      .populate('teacher', 'name email')
-      .populate('semester', 'name startDate endDate')
-      .populate('units.unit', 'name code');
-
-    return NextResponse.json(populatedAssignment);
-  } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-}
-
+// DELETE request handler
 export async function DELETE(request) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session || session.user.role !== 'admin') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
+    await connectToDatabase();
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
+    const assignmentId = searchParams.get('assignmentId');
 
-    if (!id) {
+    if (!assignmentId) {
       return NextResponse.json(
-        { error: 'Assignment ID is required' },
+        { message: 'Assignment ID is required' },
         { status: 400 }
       );
     }
 
-    await connectDB();
+    // Find and delete the assignment
+    const deletedAssignment = await TeachingAssignment.findByIdAndDelete(assignmentId);
 
-    const assignment = await TeachingAssignment.findByIdAndDelete(id);
-    if (!assignment) {
+    if (!deletedAssignment) {
       return NextResponse.json(
-        { error: 'Teaching assignment not found' },
+        { message: 'Teaching assignment not found' },
         { status: 404 }
       );
     }
 
     return NextResponse.json({ message: 'Teaching assignment deleted successfully' });
   } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error('Failed to delete teaching assignment:', error);
+    return NextResponse.json(
+      { message: 'Failed to delete teaching assignment', error: error.message },
+      { status: 500 }
+    );
   }
 }

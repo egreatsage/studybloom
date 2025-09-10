@@ -34,6 +34,16 @@ const teachingAssignmentSchema = new Schema({
     ref: 'Semester',
     required: true
   },
+  unit: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Unit',
+    required: true,
+  },
+  lecture: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Lecture',
+    required: true,
+  },
   units: [unitAssignmentSchema]
 }, { 
   timestamps: true 
